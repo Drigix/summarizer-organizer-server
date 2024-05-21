@@ -1,0 +1,1 @@
+export type SettlementSavingType = 'bonds' | 'deposit' | 'stock' | 'gold' | 'none';
