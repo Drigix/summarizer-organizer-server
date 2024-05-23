@@ -1,15 +1,21 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database.module';
 import { SettlementSavingService } from 'src/services/settlement-saving.service';
-import { settlementSavingProviders } from 'src/providers/settlement-saving.providers';
 import { SettlementSavingController } from 'src/controllers/settlement-saving.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { SettlementSaving, SettlementSavingSchema } from 'src/models/schemas/settlement-saving.schema';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    MongooseModule.forFeature([
+      {
+        name: SettlementSaving.name,
+        schema: SettlementSavingSchema
+      }
+    ])
+  ],
   controllers: [SettlementSavingController],
   providers: [
     SettlementSavingService,
-    ...settlementSavingProviders,
   ],
 })
 export class SettlementSavingModule {}

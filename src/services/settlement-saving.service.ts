@@ -1,17 +1,13 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { SETTLEMENT_MODEL_PROVIDER, SETTLEMENT_SAVING_MODEL_PROVIDER } from "src/config/model-providers.config";
-import { MONTHS_CONST } from "src/models/const/month.const";
-import { SettlementSaving } from "src/models/settlement-saving.model";
-import { Settlement } from "src/models/settlement.model";
-import { SummarizeSettlement } from "src/models/summarize-settlement.model";
-import { GroupVerticalBarModel, VerticalBarDataModel, VerticalBarModel } from "src/models/vertical-bar.model";
+import { SettlementSaving } from "src/models/schemas/settlement-saving.schema";
 
 @Injectable()
 export class SettlementSavingService {
 
     constructor(
-        @Inject(SETTLEMENT_SAVING_MODEL_PROVIDER)
+        @InjectModel(SettlementSaving.name)
         private settlementSavingModel: Model<SettlementSaving>
     ) {}
 }

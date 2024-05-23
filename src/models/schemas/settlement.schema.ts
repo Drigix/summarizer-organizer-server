@@ -1,26 +1,21 @@
-import * as mongoose from 'mongoose';
-import * as autoIncrement from 'mongoose-id-autoincrement';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-export const SettlementSchema = new mongoose.Schema({
-  date: Date,
-  description: String,
-  price: Number,
-  priceType: String
-});
+@Schema()
+export class Settlement {
+  @Prop({ required: true })
+  date: Date;
 
-// export function initSettlementSchemaIncrement() {
-
-//   mongoose.plugin(autoIncrement.plugin, {
-//     model: 'Settlement',
-//     field: 'settlementId',
-//     startAt: 26,
-//     incrementBy: 1
-//   });
+  @Prop({ required: true })
+  description: string;
   
-//   SettlementSchema.plugin(autoIncrement.plugin, {
-//     model: 'Settlement',
-//     field: 'settlementId',
-//     startAt: 26,
-//     incrementBy: 1
-//   });
-// }
+  @Prop({ required: false })
+  linkUrl: string;
+
+  @Prop({ required: true })
+  price: number;
+
+  @Prop({ required: true })
+  priceType: string;
+}
+
+export const SettlementSchema = SchemaFactory.createForClass(Settlement);

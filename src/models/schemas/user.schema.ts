@@ -1,8 +1,20 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 
-export const UserSchema = new mongoose.Schema({
-  userId: { type: Number, unique: true },
-  firstName: String,
-  lastName: String,
-  email: String,
-});
+@Schema()
+export class User {
+  @Prop({ required: true, unique: true })
+  userId: number;
+
+  @Prop({ required: true })
+  firstName: string;
+
+  @Prop({ required: true })
+  lastName: string;
+
+  @Prop({ required: true })
+  email: string;
+}
+
+export const UserSchema = SchemaFactory.createForClass(User);
+

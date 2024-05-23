@@ -1,1 +1,1 @@
-export type PriceType = 'in' | 'out';
+export type PriceType = 'in' | 'out' | 'save';

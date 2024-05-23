@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, Logger, Param, Post, Request } from "@nestjs/common";
-import { Settlement } from "src/models/settlement.model";
 import { SummarizeSettlement } from "src/models/summarize-settlement.model";
 import { VerticalBarModel } from "src/models/vertical-bar.model";
 import { SettlementService } from "src/services/settlement.service";

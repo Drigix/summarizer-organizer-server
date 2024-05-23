@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, Logger, Param, Post, Request } from "@nestjs/common";
-import { Settlement } from "src/models/settlement.model";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, Logger, Param, Post, Put, Request, UsePipes, ValidationPipe } from "@nestjs/common";
+import mongoose from "mongoose";
+import { SettlementDto } from "src/models/dto/settlement.dto";
+import { Settlement } from "src/models/schemas/settlement.schema";
 import { SummarizeSettlement } from "src/models/summarize-settlement.model";
 import { VerticalBarModel } from "src/models/vertical-bar.model";
 import { SettlementService } from "src/services/settlement.service";
@@ -11,8 +13,23 @@ export class SettlementController {
 
     @Post()
     @HttpCode(204)
-    public createSettlement(@Body() settlement: Settlement): Promise<Settlement> {
-        return this.settlementService.save(settlement);
+    public createSettlement(@Body() settlementDto: SettlementDto): Promise<Settlement> {
+        Logger.debug('Request to create new settlement');
+        return this.settlementService.save(settlementDto);
+    }
+
+    @Put(':id')
+    @UsePipes(new ValidationPipe())
+    public updateSettlement(@Param('id') id?: string, @Body() settlementDto?: SettlementDto): Promise<Settlement> {
+        Logger.debug('Request to update settlement: ' + id);
+        if(!id) {
+            throw new HttpException('Id is required', 400);
+        }
+        const isValid = mongoose.Types.ObjectId.isValid(id);
+        if(!isValid) { 
+            throw new HttpException('Id is invalid', 400);
+        }
+        return this.settlementService.update(id, settlementDto);
     }
 
     @Get()

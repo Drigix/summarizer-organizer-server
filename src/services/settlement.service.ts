@@ -1,22 +1,31 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { SETTLEMENT_MODEL_PROVIDER } from "src/config/model-providers.config";
 import { MONTHS_CONST } from "src/models/const/month.const";
-import { Settlement } from "src/models/settlement.model";
+import { SettlementDto } from "src/models/dto/settlement.dto";
+import { Settlement } from "src/models/schemas/settlement.schema";
+// import { Settlement } from "src/models/settlement.model";
 import { SummarizeSettlement } from "src/models/summarize-settlement.model";
 import { GroupVerticalBarModel, VerticalBarDataModel, VerticalBarModel } from "src/models/vertical-bar.model";
+import { DateUtil } from "src/utils/date.util";
 
 @Injectable()
 export class SettlementService {
 
     constructor(
-        @Inject(SETTLEMENT_MODEL_PROVIDER)
-        private settlementModel: Model<Settlement>
+        @InjectModel(Settlement.name) private settlementModel: Model<Settlement>
     ) {
     }
 
-    async save(settlement: Settlement): Promise<Settlement> {
+    async save(settlementDto: SettlementDto): Promise<Settlement> {
+        settlementDto.date = new Date(DateUtil.getFirstDayOfMonth(settlementDto.date));
+        const settlement = new this.settlementModel(settlementDto);
         return this.settlementModel.create(settlement);
+    }
+
+    async update(id: string, settlementDto: SettlementDto): Promise<Settlement> {
+        return this.settlementModel.findByIdAndUpdate(id, settlementDto);
     }
 
     async findAll(): Promise<Settlement[]> {
@@ -53,8 +62,9 @@ export class SettlementService {
         });
         const priceOnPlusSide = sumPriceIn - sumPriceOut;
         const summarizeSettlements = [
-            new SummarizeSettlement('Przychodzące', '#67ab90', Math.round((priceOnPlusSide / sumPriceIn) * 100), 'pi pi-plus'),
-            new SummarizeSettlement('Wychodzące', '#fd876d', Math.round((sumPriceOut / sumPriceIn) * 100), 'pi pi-minus'),
+            new SummarizeSettlement('Przychodzące', '#67ab90', Math.round((priceOnPlusSide / sumPriceIn) * 100), 0, 'pi pi-plus', 'in'),
+            new SummarizeSettlement('Wychodzące', '#fd876d', Math.round((sumPriceOut / sumPriceIn) * 100), 0, 'pi pi-minus', 'out'),
+            new SummarizeSettlement('Bilans', priceOnPlusSide < 0 ? '#fd876d' : '#67ab90', 0, priceOnPlusSide, 'pi pi-dollar', 'save')   
         ]
         return summarizeSettlements;
     }

@@ -1,13 +1,30 @@
-import * as mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-export const SettlementSavingSchema = new mongoose.Schema({
-    date: Date,
-    dateTo: Date,
-    description: String,
-    price: Number,
-    savingType: String,
-    percent: Number,
-    percentPeriod: Number,
-    priceType: String
-  });
-  
+@Schema()
+export class SettlementSaving {
+  @Prop({ required: true })
+  date: Date;
+
+  @Prop({ required: false })
+  dateTo?: Date;
+
+  @Prop({ required: true })
+  description: string;
+
+  @Prop({ required: true })
+  price: number;
+
+  @Prop({ required: true })
+  savingType: string;
+
+  @Prop({ required: false })
+  percent?: number;
+
+  @Prop({ required: false })
+  percentPeriod?: number;
+
+  @Prop({ required: true })
+  priceType: string;
+}
+
+export const SettlementSavingSchema = SchemaFactory.createForClass(SettlementSaving);
