@@ -32,6 +32,12 @@ export class SettlementService {
         return this.settlementModel.find().exec();
     }
 
+    async findAllByDescription(description: string): Promise<Settlement[]> {
+        return this.settlementModel.find({
+            description: new RegExp(`.*${description}.*`, 'i')
+        }).exec();
+    }
+
     async findAllByUserIdAndDateBetween(id: number, fromDate: string, toDate: string): Promise<Settlement[]> {
         return this.settlementModel.find({
             userId: id,

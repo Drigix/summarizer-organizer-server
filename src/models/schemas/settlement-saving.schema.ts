@@ -11,6 +11,9 @@ export class SettlementSaving {
   @Prop({ required: true })
   description: string;
 
+  @Prop({ required: false })
+  linkUrl?: string;
+
   @Prop({ required: true })
   price: number;
 

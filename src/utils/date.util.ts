@@ -26,4 +26,12 @@ export class DateUtil {
 
     return `${year}-${month.toString().padStart(2, '0')}-${lastDay}`;
   }
+
+  static calculateMonthsBetween(date: Date, currentDate: Date): number {
+    let months;
+    months = (currentDate.getFullYear() - date.getFullYear()) * 12;
+    months -= date.getMonth();
+    months += currentDate.getMonth();
+    return months;
+  }
 }

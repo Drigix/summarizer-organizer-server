@@ -38,6 +38,15 @@ export class SettlementController {
         return this.settlementService.findAll();
     }
 
+    @Get(':text')
+    public getSettlementsByDescription(@Param('text') text?: string): Promise<Settlement[]> {
+        Logger.debug('Request to get all settlements match text:' + text);
+        if(!text) {
+            throw new HttpException('Text is required', 400);
+        }
+        return this.settlementService.findAllByDescription(text);
+    }
+
     // @Get('/:userId/:fromDate/:toDate')
     // public getSettlementsForUserAndDate(
     //     @Param('userId') userId: number, 
