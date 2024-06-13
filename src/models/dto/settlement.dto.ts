@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { PriceType } from "../types/price.type";
 
 export class SettlementDto {
@@ -12,6 +12,7 @@ export class SettlementDto {
     @MinLength(2)
     description: string;
 
+    @IsOptional()
     @IsString()
     @MaxLength(300)
     @MinLength(10)

@@ -25,6 +25,7 @@ export class SettlementService {
     }
 
     async update(id: string, settlementDto: SettlementDto): Promise<Settlement> {
+        settlementDto.date = new Date(DateUtil.getFirstDayOfMonth(settlementDto.date));
         return this.settlementModel.findByIdAndUpdate(id, settlementDto);
     }
 

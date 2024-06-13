@@ -90,7 +90,10 @@ export class SettlementSavingService {
     async findBondsAndDepositsWithProfit(year: string): Promise<ProfitLineChartModel> {
         const settlements = await this.settlementSavingModel.find({
             $expr: {
-                $lte: [{ $year: "$date" }, Number(year)]
+                $and: [
+                    { $lte: [{ $year: "$date" }, Number(year)] },
+                    { $gte: ["$dateTo", new Date()] }
+                ]
             },
             savingType: { $in: ['bonds', 'deposit'] }
         }).exec();
