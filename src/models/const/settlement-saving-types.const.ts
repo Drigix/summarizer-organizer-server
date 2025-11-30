@@ -1,1 +1,1 @@
-export const SETTLEMENT_SAVING_TYPES_CONST = ['Bonds', 'Deposit', 'Gold', 'None', 'Stock'];
+export const SETTLEMENT_SAVING_TYPES_CONST = ['Bonds', 'Crypto', 'Deposit', 'Gold', 'None', 'Silver', 'Stock',];

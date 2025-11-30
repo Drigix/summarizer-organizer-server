@@ -5,6 +5,7 @@ import { SettlementSavingDto } from "src/models/dto/settlement-saving.dto";
 import { ProfitLineChartModel } from "src/models/profit-line-chart.model";
 import { SettlementSaving } from "src/models/schemas/settlement-saving.schema";
 import { SummarizeSettlement } from "src/models/summarize-settlement.model";
+import { SettlementSavingEnum } from "src/models/types/settlement-saving.enum";
 import { VerticalBarModel } from "src/models/vertical-bar.model";
 import { SettlementSavingService } from "src/services/settlement-saving.service";
 import { SettlementService } from "src/services/settlement.service";
@@ -36,6 +37,21 @@ export class SettlementSavingController {
         return this.settlementSavingService.update(id, settlementSavingDto);
     }
 
+  @Put('/sell/:id')
+  @HttpCode(204)
+  @UsePipes(new ValidationPipe())
+  public sellSettlementSaving(@Param('id') id?: string, @Body() settlementSavingDto?: SettlementSavingDto): Promise<void> {
+    Logger.debug('Request to sell settlement-saving: ', id);
+    if(!id) {
+      throw new HttpException('Id is required', 400);
+    }
+    const isValid = mongoose.Types.ObjectId.isValid(id);
+    if(!isValid) {
+      throw new HttpException('Id is invalid', 400);
+    }
+    return this.settlementSavingService.sell(id, settlementSavingDto);
+  }
+
     @Get('/:toDate')
     public getAllSettlementSavingToDate(@Param('toDate') toDate: string): Promise<SettlementSaving[]> {
         Logger.debug('Request get all settlement-saving till date: ' + toDate);
@@ -53,5 +69,24 @@ export class SettlementSavingController {
     public getBondsAndDepositsWithProfit(@Param('year') year: string): Promise<ProfitLineChartModel> {
         Logger.debug('Request get all bonds and deposit with profit in: ' + year);
         return this.settlementSavingService.findBondsAndDepositsWithProfit(year);
+    }
+
+    @Get('/summarize-saving-type/chart/:savingType')
+    public getSummarizePricesToChart(@Param('savingType') savingType: SettlementSavingEnum): Promise<VerticalBarModel> {
+        Logger.debug('Request to get summarize' + savingType + ' prices to chart');
+        return this.settlementSavingService.findSummarizePricesChartDataset(savingType);
+    }
+
+    @Get('/profit/saving-type/:savingType')
+    public getProfitGoldPrices(@Param('savingType') savingType: SettlementSavingEnum): Promise<SummarizeSettlement[]> {
+        Logger.debug('Request to get profit' + savingType + ' prices to chart');
+        return this.settlementSavingService.findProfitPrices(savingType);
+    }
+
+    @Delete(':id')
+    @HttpCode(204)
+    public deleteSettlement(@Param('id') id: string): Promise<void> {
+        Logger.debug('Request to delete settlement: ' + id);
+        return this.settlementSavingService.deleteById(id);
     }
 }

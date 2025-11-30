@@ -28,6 +28,10 @@ export class SettlementSavingDto {
     @IsNumber()
     price: number;
 
+    @IsOptional()
+    @IsNumber()
+    currentPrice?: number;
+
     @IsNotEmpty()
     savingType: SettlementSavingType;
 
@@ -41,4 +45,12 @@ export class SettlementSavingDto {
 
     @IsNotEmpty()
     priceType: PriceType;
+
+    @IsOptional()
+    @IsNumber()
+    amount?: number = 1;
+
+    @IsOptional()
+    @IsDateString()
+    sellDate?: Date = new Date();
 }

@@ -34,4 +34,16 @@ export class DateUtil {
     months += currentDate.getMonth();
     return months;
   }
+
+  static calculateMonthDifference(date1: Date, date2: Date): number {
+    const year1 = date1.getFullYear();
+    const month1 = date1.getMonth();
+    const year2 = date2.getFullYear();
+    const month2 = date2.getMonth();
+
+    const yearDifference = year2 - year1;
+    const monthDifference = month2 - month1;
+
+    return yearDifference * 12 + monthDifference;
+  }
 }

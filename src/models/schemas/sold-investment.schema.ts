@@ -1,7 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
-export class SettlementSaving {
+export class SoldInvestment {
+  @Prop({ required: true })
+  sellDate: Date;
+
   @Prop({ required: true })
   date: Date;
 
@@ -15,25 +18,19 @@ export class SettlementSaving {
   linkUrl?: string;
 
   @Prop({ required: true })
-  price: number;
+  buyPrice: number;
 
-  @Prop({ required: false })
-  currentPrice?: number;
+  @Prop({ required: true })
+  sellPrice: number;
+
+  @Prop({ required: true })
+  profit: number
 
   @Prop({ required: true })
   savingType: string;
 
   @Prop({ required: false })
-  percent?: number;
-
-  @Prop({ required: false })
-  percentPeriod?: number;
-
-  @Prop({ required: true })
-  priceType: string;
-
-  @Prop({ required: false })
   amount?: number;
 }
 
-export const SettlementSavingSchema = SchemaFactory.createForClass(SettlementSaving);
+export const SoldInvestmentSchema = SchemaFactory.createForClass(SoldInvestment);

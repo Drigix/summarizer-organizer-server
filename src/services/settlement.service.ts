@@ -1,14 +1,14 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { SETTLEMENT_MODEL_PROVIDER } from "src/config/model-providers.config";
+import { Model, set } from "mongoose";
 import { MONTHS_CONST } from "src/models/const/month.const";
 import { SettlementDto } from "src/models/dto/settlement.dto";
 import { Settlement } from "src/models/schemas/settlement.schema";
-// import { Settlement } from "src/models/settlement.model";
 import { SummarizeSettlement } from "src/models/summarize-settlement.model";
 import { GroupVerticalBarModel, VerticalBarDataModel, VerticalBarModel } from "src/models/vertical-bar.model";
 import { DateUtil } from "src/utils/date.util";
+import { SettlementSavingDto } from '../models/dto/settlement-saving.dto';
+import { PriceUtils } from '../utils/prive.utils';
 
 @Injectable()
 export class SettlementService {
@@ -19,9 +19,31 @@ export class SettlementService {
     }
 
     async save(settlementDto: SettlementDto): Promise<Settlement> {
+        let result;
         settlementDto.date = new Date(DateUtil.getFirstDayOfMonth(settlementDto.date));
-        const settlement = new this.settlementModel(settlementDto);
-        return this.settlementModel.create(settlement);
+        settlementDto.toDate = new Date(DateUtil.getFirstDayOfMonth(settlementDto.toDate));
+        if(settlementDto.date.getMonth() === settlementDto.toDate.getMonth()) {
+            const settlement = new this.settlementModel(settlementDto);
+            result = this.settlementModel.create(settlement);
+        } else {
+            const dateDiff = DateUtil.calculateMonthDifference(settlementDto.date, settlementDto.toDate);
+            let dateHandler = new Date(settlementDto.date);
+            for(let i = 0; i <= dateDiff; i++) {
+                dateHandler.setMonth(dateHandler.getMonth() + (i === 0 ? 0 : 1)); 
+                settlementDto.date = new Date(DateUtil.getFirstDayOfMonth(dateHandler));
+                const settlement = new this.settlementModel(settlementDto);
+                result = this.settlementModel.create(settlement);
+            }
+        }
+        return result;
+    }
+
+    async saveFromSavingSettlement(settlementSavingDto: SettlementSavingDto): Promise<Settlement> {
+      const settlement = this.convertSavingSettlementToSoldInvestment(settlementSavingDto);
+      if (settlement == null) {
+        return null;
+      }
+      return this.settlementModel.create(settlement);
     }
 
     async update(id: string, settlementDto: SettlementDto): Promise<Settlement> {
@@ -113,8 +135,8 @@ export class SettlementService {
         const verticalBarModel = new VerticalBarModel(
             MONTHS_CONST,
             [
-              new VerticalBarDataModel('Przychodzące', undefined, undefined, pricesInToChart),
-              new VerticalBarDataModel('Wychodzące', undefined, undefined, pricesOutToChart)
+              new VerticalBarDataModel('Przychodzące', '#67ab90', '#67ab90', pricesInToChart),
+              new VerticalBarDataModel('Wychodzące', '#fd876d', '#fd876d', pricesOutToChart)
             ]   
         );
       return verticalBarModel;
@@ -122,5 +144,19 @@ export class SettlementService {
 
     async deleteById(id: string): Promise<void> {
         this.settlementModel.findByIdAndDelete(id).exec();
+    }
+
+    private convertSavingSettlementToSoldInvestment(settlementSavingDto: SettlementSavingDto): Settlement {
+      const priceType = PriceUtils.convertPriceToSettlementPriceType(settlementSavingDto.price, settlementSavingDto.currentPrice);
+      if (priceType === null) {
+        return null;
+      }
+      const settlement = new Settlement();
+      settlement.date = new Date(DateUtil.getFirstDayOfMonth(settlementSavingDto.sellDate));
+      settlement.description = settlementSavingDto.description;
+      settlement.linkUrl = settlementSavingDto.linkUrl;
+      settlement.price = PriceUtils.calculateSellPrice(settlementSavingDto.price, settlementSavingDto.currentPrice);
+      settlement.priceType = priceType;
+      return settlement;
     }
 }

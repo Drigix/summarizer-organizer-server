@@ -8,6 +8,10 @@ export class SettlementDto {
 
     @IsNotEmpty()
     @IsString()
+    toDate: Date;
+
+    @IsNotEmpty()
+    @IsString()
     @MaxLength(100)
     @MinLength(2)
     description: string;
