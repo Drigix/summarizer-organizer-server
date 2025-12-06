@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import {
-  Settlement,
-  SettlementSchema,
-} from '../models/schemas/settlement.schema';
 import { SettlementController } from '../controllers/settlement.controller';
 import { SettlementService } from '../services/settlement.service';
 import {
   SoldInvestment,
   SoldInvestmentSchema,
 } from '../models/schemas/sold-investment.schema';
+import { SoldInvestmentController } from '../controllers/sold-investment.controller';
+import { SoldInvestmentService } from '../services/sold-investment.service';
 
 
 @Module({
@@ -21,9 +19,9 @@ import {
       }
     ])
   ],
-  controllers: [SettlementController],
+  controllers: [SoldInvestmentController],
   providers: [
-    SettlementService,
+    SoldInvestmentService,
   ],
 })
 export class SoldInvestmentModule {}

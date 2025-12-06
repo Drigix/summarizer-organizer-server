@@ -4,6 +4,12 @@ import { Model } from 'mongoose';
 import { SoldInvestment } from '../models/schemas/sold-investment.schema';
 import { SettlementSavingDto } from '../models/dto/settlement-saving.dto';
 import { PriceUtils } from '../utils/prive.utils';
+import { SettlementSavingEnum } from '../models/enums/settlement-saving.enum';
+import {
+  VerticalBarDataModel,
+  VerticalBarModel,
+} from '../models/vertical-bar.model';
+import { ChartColorEnum } from '../models/enums/chat-color.enum';
 
 @Injectable()
 export class SoldInvestmentService {
@@ -15,6 +21,24 @@ export class SoldInvestmentService {
   async saveFromSettlementSaving(settlementSavingDto: SettlementSavingDto): Promise<SoldInvestment> {
     const soldInvestment = this.convertSavingSettlementToSoldInvestment(settlementSavingDto);
     return this.soldInvestmentModel.create(soldInvestment);
+  }
+
+  async findSummarizeSoldInvestmentChartDataset(savingType: SettlementSavingEnum): Promise<VerticalBarModel> {
+    const soldIvestments = await this.soldInvestmentModel.find({
+      savingType: { $in: [savingType] }
+    });
+    const purchasesPricesToChart = soldIvestments.map(s => s.buyPrice * (s?.amount ?? 1));
+    const currentPricesToChart = soldIvestments.map(s => s.sellPrice * (s?.amount ?? 1));
+    const profitToChart = soldIvestments.map(s => s.profit * (s?.amount ?? 1));
+    const verticalBarModel = new VerticalBarModel(
+      soldIvestments.map(s => s.description),
+      [
+        new VerticalBarDataModel('Cena kupna', ChartColorEnum.BUY_PRICE, ChartColorEnum.BUY_PRICE, purchasesPricesToChart),
+        new VerticalBarDataModel('Cena sprzedaży', ChartColorEnum.SELL_PRICE, ChartColorEnum.SELL_PRICE, currentPricesToChart),
+        new VerticalBarDataModel('Profit', ChartColorEnum.PROFIT_PRICE, ChartColorEnum.PROFIT_PRICE, profitToChart)
+      ]
+    );
+    return verticalBarModel;
   }
 
   private convertSavingSettlementToSoldInvestment(settlementSavingDto: SettlementSavingDto): SoldInvestment {

@@ -5,7 +5,7 @@ import { SettlementSavingDto } from "src/models/dto/settlement-saving.dto";
 import { ProfitLineChartModel } from "src/models/profit-line-chart.model";
 import { SettlementSaving } from "src/models/schemas/settlement-saving.schema";
 import { SummarizeSettlement } from "src/models/summarize-settlement.model";
-import { SettlementSavingEnum } from "src/models/types/settlement-saving.enum";
+import { SettlementSavingEnum } from "src/models/enums/settlement-saving.enum";
 import { VerticalBarModel } from "src/models/vertical-bar.model";
 import { SettlementSavingService } from "src/services/settlement-saving.service";
 import { SettlementService } from "src/services/settlement.service";
