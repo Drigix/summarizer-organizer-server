@@ -13,6 +13,7 @@ import {
   SoldInvestment,
   SoldInvestmentSchema,
 } from '../models/schemas/sold-investment.schema';
+import { RefreshPriceService } from '../services/refresh-price.service';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import {
   providers: [
     SettlementSavingService,
     SettlementService,
-    SoldInvestmentService
+    SoldInvestmentService,
+    RefreshPriceService
   ],
 })
 export class SettlementSavingModule {}
