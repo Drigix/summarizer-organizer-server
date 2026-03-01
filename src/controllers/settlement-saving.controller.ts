@@ -102,7 +102,7 @@ export class SettlementSavingController {
   ): Promise<VerticalBarModel> {
     Logger.debug('Request to get summarize' + savingType + ' prices to chart');
     return this.settlementSavingService.findSummarizePricesChartDataset(
-      savingType,
+      savingType
     );
   }
 
