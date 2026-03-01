@@ -13,6 +13,7 @@ import { DateUtil } from "src/utils/date.util";
 import { SoldInvestmentService } from './sold-investment.service';
 import { SettlementService } from './settlement.service';
 import { RefreshPriceService } from './refresh-price.service';
+import { ChartColorEnum } from '../models/enums/chart-color.enum';
 
 @Injectable()
 export class SettlementSavingService {
@@ -274,24 +275,24 @@ export class SettlementSavingService {
       }
     });
     const purchasesPricesToChart = settlements.map(
-      (s) => s.price * (s?.amount ?? 1),
+      (s) => Math.round(s.price * (s?.amount ?? 1)),
     );
     const currentPricesToChart = settlements.map(
-      (s) => s.currentPrice * (s?.amount ?? 1),
+      (s) => Math.round(s.currentPrice * (s?.amount ?? 1)),
     );
     const verticalBarModel = new VerticalBarModel(
       settlements.map((s) => s.description),
       [
         new VerticalBarDataModel(
           'Cena kupna',
-          '#577bb1',
-          '#577bb1',
+          ChartColorEnum.BUY_PRICE_BLUE,
+          ChartColorEnum.BUY_PRICE_BLUE,
           purchasesPricesToChart,
         ),
         new VerticalBarDataModel(
           'Aktualna cena',
-          '#67ab90',
-          '#67ab90',
+          ChartColorEnum.CURRENT_PRICE,
+          ChartColorEnum.CURRENT_PRICE,
           currentPricesToChart,
         ),
       ],
@@ -324,7 +325,7 @@ export class SettlementSavingService {
     const summarizeSettlements = [
       new SummarizeSettlement(
         'Aktualna cena',
-        '#67ab90',
+        ChartColorEnum.CURRENT_PRICE,
         Math.round((priceOnPlusSide / sumPriceIn) * 100),
         0,
         'pi pi-plus',
@@ -332,7 +333,7 @@ export class SettlementSavingService {
       ),
       new SummarizeSettlement(
         'Cena zakupu',
-        '#fd876d',
+        ChartColorEnum.BUY_PRICE_RED,
         Math.round((sumPriceOut / sumPriceIn) * 100),
         0,
         'pi pi-minus',
@@ -340,9 +341,11 @@ export class SettlementSavingService {
       ),
       new SummarizeSettlement(
         'Bilans',
-        priceOnPlusSide < 0 ? '#fd876d' : '#67ab90',
+        priceOnPlusSide < 0
+          ? ChartColorEnum.LOSS_PRICE
+          : ChartColorEnum.PROFIT_PRICE,
         0,
-        priceOnPlusSide,
+        Math.round(priceOnPlusSide),
         'pi pi-dollar',
         'save',
       ),
