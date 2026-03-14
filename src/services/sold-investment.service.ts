@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SoldInvestment } from '../models/schemas/sold-investment.schema';
@@ -23,10 +23,16 @@ export class SoldInvestmentService {
     return this.soldInvestmentModel.create(soldInvestment);
   }
 
-  async findSummarizeSoldInvestmentChartDataset(savingType: SettlementSavingEnum): Promise<VerticalBarModel> {
-    const soldIvestments = await this.soldInvestmentModel.find({
-      savingType: { $in: [savingType] }
-    });
+  async findSummarizeSoldInvestmentChartDataset(savingType: SettlementSavingEnum, year: number): Promise<VerticalBarModel> {
+    const yearNotEmpty = year ?? new Date().getFullYear();
+    const soldIvestments = await this.soldInvestmentModel.aggregate([
+      {
+        $match: {
+          savingType: { $in: ['stock'] },
+          $expr: { $eq: [{ $year: '$sellDate' }, Number(yearNotEmpty)] },
+        },
+      },
+    ]);
     const purchasesPricesToChart = soldIvestments.map(s => s.buyPrice * (s?.amount ?? 1));
     const currentPricesToChart = soldIvestments.map(s => s.sellPrice * (s?.amount ?? 1));
     const profitToChart = soldIvestments.map(s => s.profit * (s?.amount ?? 1));
