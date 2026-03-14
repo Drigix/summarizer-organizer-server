@@ -13,6 +13,7 @@ import { DateUtil } from 'src/utils/date.util';
 import { SettlementSavingDto } from '../models/dto/settlement-saving.dto';
 import { PriceUtils } from '../utils/price.utils';
 import { ChartColorEnum } from '../models/enums/chart-color.enum';
+import { ChartIconEnum } from '../models/enums/chart-icon.enum';
 
 @Injectable()
 export class SettlementService {
@@ -127,7 +128,7 @@ export class SettlementService {
         ChartColorEnum.SETTLEMENT_IN,
         Math.round((priceOnPlusSide / sumPriceIn) * 100),
         0,
-        'pi pi-plus',
+        ChartIconEnum.SETTLEMENT_IN,
         'in',
       ),
       new SummarizeSettlement(
@@ -135,7 +136,7 @@ export class SettlementService {
         ChartColorEnum.SETTLEMENT_OUT,
         Math.round((sumPriceOut / sumPriceIn) * 100),
         0,
-        'pi pi-minus',
+        ChartIconEnum.SETTLEMENT_OUT,
         'out',
       ),
       new SummarizeSettlement(
@@ -145,7 +146,7 @@ export class SettlementService {
           : ChartColorEnum.PROFIT_PRICE,
         0,
         priceOnPlusSide,
-        'pi pi-dollar',
+        ChartIconEnum.SETTLEMENT_BALANCE,
         'save',
       ),
     ];

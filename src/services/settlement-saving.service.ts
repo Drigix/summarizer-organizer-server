@@ -14,6 +14,7 @@ import { SoldInvestmentService } from './sold-investment.service';
 import { SettlementService } from './settlement.service';
 import { RefreshPriceService } from './refresh-price.service';
 import { ChartColorEnum } from '../models/enums/chart-color.enum';
+import { ChartIconEnum } from '../models/enums/chart-icon.enum';
 
 @Injectable()
 export class SettlementSavingService {
@@ -328,7 +329,7 @@ export class SettlementSavingService {
         ChartColorEnum.CURRENT_PRICE,
         Math.round((priceOnPlusSide / sumPriceIn) * 100),
         0,
-        'pi pi-plus',
+        ChartIconEnum.SETTLEMENT_IN,
         'in',
       ),
       new SummarizeSettlement(
@@ -336,7 +337,7 @@ export class SettlementSavingService {
         ChartColorEnum.BUY_PRICE_RED,
         Math.round((sumPriceOut / sumPriceIn) * 100),
         0,
-        'pi pi-minus',
+        ChartIconEnum.SETTLEMENT_OUT,
         'out',
       ),
       new SummarizeSettlement(
@@ -346,7 +347,7 @@ export class SettlementSavingService {
           : ChartColorEnum.PROFIT_PRICE,
         0,
         Math.round(priceOnPlusSide),
-        'pi pi-dollar',
+        ChartIconEnum.SETTLEMENT_BALANCE,
         'save',
       ),
     ];
