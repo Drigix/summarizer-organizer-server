@@ -15,6 +15,7 @@ import { SettlementService } from './settlement.service';
 import { RefreshPriceService } from './refresh-price.service';
 import { ChartColorEnum } from '../models/enums/chart-color.enum';
 import { ChartIconEnum } from '../models/enums/chart-icon.enum';
+import { TranslationLabelUtils } from '../utils/translation-label.utils';
 
 @Injectable()
 export class SettlementSavingService {
@@ -252,8 +253,20 @@ export class SettlementSavingService {
     }
     const profitLineChartDataModel: ProfitLineChartDataModel[] = [];
     profitLineChartDataModel.push(
-      new ProfitLineChartDataModel('Bonds', null, bondsData, false, 0.4),
-      new ProfitLineChartDataModel('Deposits', null, depositsData, false, 0.4),
+      new ProfitLineChartDataModel(
+        TranslationLabelUtils.SETTLEMENT_BONDS_LABEL,
+        null,
+        bondsData,
+        false,
+        0.4,
+      ),
+      new ProfitLineChartDataModel(
+        TranslationLabelUtils.SETTLEMENT_DEPOSITS_LABEL,
+        null,
+        depositsData,
+        false,
+        0.4,
+      ),
     );
     const profitLineChartModel = new ProfitLineChartModel(
       labels,
@@ -285,13 +298,13 @@ export class SettlementSavingService {
       settlements.map((s) => s.description),
       [
         new VerticalBarDataModel(
-          'Cena kupna',
+          TranslationLabelUtils.SETTLEMENT_BUY_PRICE_LABEL,
           ChartColorEnum.BUY_PRICE_BLUE,
           ChartColorEnum.BUY_PRICE_BLUE,
           purchasesPricesToChart,
         ),
         new VerticalBarDataModel(
-          'Aktualna cena',
+          TranslationLabelUtils.SETTLEMENT_CURRENT_PRICE_LABEL,
           ChartColorEnum.CURRENT_PRICE,
           ChartColorEnum.CURRENT_PRICE,
           currentPricesToChart,
@@ -325,7 +338,7 @@ export class SettlementSavingService {
     const priceOnPlusSide = sumPriceIn - sumPriceOut;
     const summarizeSettlements = [
       new SummarizeSettlement(
-        'Aktualna cena',
+        TranslationLabelUtils.SETTLEMENT_CURRENT_PRICE_LABEL,
         ChartColorEnum.CURRENT_PRICE,
         Math.round((priceOnPlusSide / sumPriceIn) * 100),
         0,
@@ -333,7 +346,7 @@ export class SettlementSavingService {
         'in',
       ),
       new SummarizeSettlement(
-        'Cena zakupu',
+        TranslationLabelUtils.SETTLEMENT_BUY_PRICE_LABEL,
         ChartColorEnum.BUY_PRICE_RED,
         Math.round((sumPriceOut / sumPriceIn) * 100),
         0,
@@ -341,7 +354,7 @@ export class SettlementSavingService {
         'out',
       ),
       new SummarizeSettlement(
-        'Bilans',
+        TranslationLabelUtils.SETTLEMENT_BALANCE_LABEL,
         priceOnPlusSide < 0
           ? ChartColorEnum.LOSS_PRICE
           : ChartColorEnum.PROFIT_PRICE,

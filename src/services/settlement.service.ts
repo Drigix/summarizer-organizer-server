@@ -14,6 +14,7 @@ import { SettlementSavingDto } from '../models/dto/settlement-saving.dto';
 import { PriceUtils } from '../utils/price.utils';
 import { ChartColorEnum } from '../models/enums/chart-color.enum';
 import { ChartIconEnum } from '../models/enums/chart-icon.enum';
+import { TranslationLabelUtils } from '../utils/translation-label.utils';
 
 @Injectable()
 export class SettlementService {
@@ -124,7 +125,7 @@ export class SettlementService {
     const priceOnPlusSide = sumPriceIn - sumPriceOut;
     const summarizeSettlements = [
       new SummarizeSettlement(
-        'Przychodzące',
+        TranslationLabelUtils.SETTLEMENT_IN_LABEL,
         ChartColorEnum.SETTLEMENT_IN,
         Math.round((priceOnPlusSide / sumPriceIn) * 100),
         0,
@@ -132,7 +133,7 @@ export class SettlementService {
         'in',
       ),
       new SummarizeSettlement(
-        'Wychodzące',
+        TranslationLabelUtils.SETTLEMENT_OUT_LABEL,
         ChartColorEnum.SETTLEMENT_OUT,
         Math.round((sumPriceOut / sumPriceIn) * 100),
         0,
@@ -140,7 +141,7 @@ export class SettlementService {
         'out',
       ),
       new SummarizeSettlement(
-        'Bilans',
+        TranslationLabelUtils.SETTLEMENT_BALANCE_LABEL,
         priceOnPlusSide < 0
           ? ChartColorEnum.LOSS_PRICE
           : ChartColorEnum.PROFIT_PRICE,
@@ -191,13 +192,13 @@ export class SettlementService {
     });
     const verticalBarModel = new VerticalBarModel(MONTHS_CONST, [
       new VerticalBarDataModel(
-        'Przychodzące',
+        TranslationLabelUtils.SETTLEMENT_IN_LABEL,
         ChartColorEnum.SETTLEMENT_IN,
         ChartColorEnum.SETTLEMENT_IN,
         pricesInToChart,
       ),
       new VerticalBarDataModel(
-        'Wychodzące',
+        TranslationLabelUtils.SETTLEMENT_OUT_LABEL,
         ChartColorEnum.SETTLEMENT_OUT,
         ChartColorEnum.SETTLEMENT_OUT,
         pricesOutToChart,

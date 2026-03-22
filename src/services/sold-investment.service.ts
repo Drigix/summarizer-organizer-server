@@ -10,6 +10,7 @@ import {
   VerticalBarModel,
 } from '../models/vertical-bar.model';
 import { ChartColorEnum } from '../models/enums/chart-color.enum';
+import { TranslationLabelUtils } from '../utils/translation-label.utils';
 
 @Injectable()
 export class SoldInvestmentService {
@@ -25,7 +26,7 @@ export class SoldInvestmentService {
 
   async findSummarizeSoldInvestmentChartDataset(savingType: SettlementSavingEnum, year: number): Promise<VerticalBarModel> {
     const yearNotEmpty = year ?? new Date().getFullYear();
-    const soldIvestments = await this.soldInvestmentModel.aggregate([
+    const soldInvestments = await this.soldInvestmentModel.aggregate([
       {
         $match: {
           savingType: { $in: ['stock'] },
@@ -33,26 +34,26 @@ export class SoldInvestmentService {
         },
       },
     ]);
-    const purchasesPricesToChart = soldIvestments.map(s => s.buyPrice * (s?.amount ?? 1));
-    const currentPricesToChart = soldIvestments.map(s => s.sellPrice * (s?.amount ?? 1));
-    const profitToChart = soldIvestments.map(s => s.profit * (s?.amount ?? 1));
+    const purchasesPricesToChart = soldInvestments.map(s => s.buyPrice * (s?.amount ?? 1));
+    const currentPricesToChart = soldInvestments.map(s => s.sellPrice * (s?.amount ?? 1));
+    const profitToChart = soldInvestments.map(s => s.profit * (s?.amount ?? 1));
     const verticalBarModel = new VerticalBarModel(
-      soldIvestments.map((s) => s.description),
+      soldInvestments.map((s) => s.description),
       [
         new VerticalBarDataModel(
-          'Cena kupna',
+          TranslationLabelUtils.SETTLEMENT_BUY_PRICE_LABEL,
           ChartColorEnum.BUY_PRICE_BLUE,
           ChartColorEnum.BUY_PRICE_BLUE,
           purchasesPricesToChart,
         ),
         new VerticalBarDataModel(
-          'Cena sprzedaży',
+          TranslationLabelUtils.SETTLEMENT_SELL_PRICE_LABEL,
           ChartColorEnum.SELL_PRICE,
           ChartColorEnum.SELL_PRICE,
           currentPricesToChart,
         ),
         new VerticalBarDataModel(
-          'Profit',
+          TranslationLabelUtils.SETTLEMENT_PROFIT_LABEL,
           ChartColorEnum.PROFIT_PRICE,
           ChartColorEnum.PROFIT_PRICE,
           profitToChart,
