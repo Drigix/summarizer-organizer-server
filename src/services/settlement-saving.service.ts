@@ -130,22 +130,22 @@ export class SettlementSavingService {
     if (
       settlements.some((s) => s._id.savingType === SettlementSavingEnum.BONDS)
     ) {
-      labels.push('Bonds');
+      labels.push(TranslationLabelUtils.SETTLEMENT_BONDS_LABEL);
     }
     if (
       settlements.some((s) => s._id.savingType === SettlementSavingEnum.CRYPTO)
     ) {
-      labels.push('Crypto');
+      labels.push(TranslationLabelUtils.SETTLEMENT_CRYPTO_LABEL);
     }
     if (
       settlements.some((s) => s._id.savingType === SettlementSavingEnum.DEPOSIT)
     ) {
-      labels.push('Deposit');
+      labels.push(TranslationLabelUtils.SETTLEMENT_DEPOSITS_LABEL);
     }
     if (
       settlements.some((s) => s._id.savingType === SettlementSavingEnum.GOLD)
     ) {
-      labels.push('Gold');
+      labels.push(TranslationLabelUtils.SETTLEMENT_GOLD_LABEL);
     }
     if (
       settlements.some((s) => s._id.savingType === SettlementSavingEnum.NONE)
@@ -155,12 +155,12 @@ export class SettlementSavingService {
     if (
       settlements.some((s) => s._id.savingType === SettlementSavingEnum.SILVER)
     ) {
-      labels.push('Silver');
+      labels.push(TranslationLabelUtils.SETTLEMENT_SILVER_LABEL);
     }
     if (
       settlements.some((s) => s._id.savingType === SettlementSavingEnum.STOCK)
     ) {
-      labels.push('Stock');
+      labels.push(TranslationLabelUtils.SETTLEMENT_STOCK_LABEL);
     }
     const verticalBarModel = new DoughnutChartModel(labels, [
       new DoughnutChartDataModel(undefined, undefined, undefined, prices),
