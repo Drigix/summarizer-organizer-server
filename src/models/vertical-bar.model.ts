@@ -11,17 +11,25 @@ export class VerticalBarModel {
 }
 
 export class VerticalBarDataModel {
-    label?: string;
-    backgroundColor?: string;
-    borderColor?: string;
-    data?: number[];
+  label?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+  data?: number[] | string[];
+  additionalData?: string[];
 
-    constructor(label?: string, backgroundColor?: string, borderColor?: string, data?: number[]) {
-        this.label = label;
-        this.backgroundColor = backgroundColor;
-        this.borderColor = borderColor;
-        this.data = data;
-    }
+  constructor(
+    label?: string,
+    backgroundColor?: string,
+    borderColor?: string,
+    data?: number[] | string[],
+    additionalData?: string[]
+  ) {
+    this.label = label;
+    this.backgroundColor = backgroundColor;
+    this.borderColor = borderColor;
+    this.data = data;
+    this.additionalData = additionalData;
+  }
 }
 
 export class GroupVerticalBarModel {
