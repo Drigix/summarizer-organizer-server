@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MONTHS_CONST } from 'src/models/const/month.const';
@@ -27,16 +27,16 @@ export class SettlementService {
     settlementDto.date = new Date(
       DateUtil.getFirstDayOfMonth(settlementDto.date),
     );
-    settlementDto.toDate = new Date(
-      DateUtil.getFirstDayOfMonth(settlementDto.toDate),
+    settlementDto.dateTo = new Date(
+      DateUtil.getFirstDayOfMonth(settlementDto.dateTo),
     );
-    if (settlementDto.date.getMonth() === settlementDto.toDate.getMonth()) {
+    if (settlementDto.date.getMonth() === settlementDto.dateTo.getMonth()) {
       const settlement = new this.settlementModel(settlementDto);
       result = this.settlementModel.create(settlement);
     } else {
       const dateDiff = DateUtil.calculateMonthDifference(
         settlementDto.date,
-        settlementDto.toDate,
+        settlementDto.dateTo,
       );
       let dateHandler = new Date(settlementDto.date);
       for (let i = 0; i <= dateDiff; i++) {
@@ -61,10 +61,26 @@ export class SettlementService {
   }
 
   async update(id: string, settlementDto: SettlementDto): Promise<Settlement> {
-    settlementDto.date = new Date(
-      DateUtil.getFirstDayOfMonth(settlementDto.date),
-    );
-    return this.settlementModel.findByIdAndUpdate(id, settlementDto);
+    let result = new Settlement();
+    if (settlementDto.updateAllRecords) {
+      const settlementsInTheSeries = await this.settlementModel.find({
+        description: settlementDto.description,
+      });
+      settlementDto.date = new Date(
+        DateUtil.getFirstDayOfMonth(settlementDto.date),
+      );
+      for (const settlement of settlementsInTheSeries) {
+        settlement.price = settlementDto.price;
+        settlement.description = settlementDto.description;
+        result = await this.settlementModel.findByIdAndUpdate(
+          settlement._id,
+          settlement,
+        );
+      }
+    } else {
+      result = await this.settlementModel.findByIdAndUpdate(id, settlementDto);
+    }
+    return result;
   }
 
   async findAll(): Promise<Settlement[]> {

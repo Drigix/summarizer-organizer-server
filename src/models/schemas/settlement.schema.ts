@@ -5,9 +5,12 @@ export class Settlement {
   @Prop({ required: true })
   date: Date;
 
+  @Prop({ required: false })
+  dateTo?: Date;
+
   @Prop({ required: true })
   description: string;
-  
+
   @Prop({ required: false })
   linkUrl: string;
 

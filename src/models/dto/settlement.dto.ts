@@ -2,30 +2,33 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from
 import { PriceType } from "../types/price.type";
 
 export class SettlementDto {
-    @IsNotEmpty()
-    @IsString()
-    date: Date;
+  @IsNotEmpty()
+  @IsString()
+  date: Date;
 
-    @IsNotEmpty()
-    @IsString()
-    toDate: Date;
+  @IsNotEmpty()
+  @IsString()
+  dateTo: Date;
 
-    @IsNotEmpty()
-    @IsString()
-    @MaxLength(100)
-    @MinLength(2)
-    description: string;
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(100)
+  @MinLength(2)
+  description: string;
 
-    @IsOptional()
-    @IsString()
-    @MaxLength(300)
-    @MinLength(10)
-    linkUrl?: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  @MinLength(10)
+  linkUrl?: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    price: number;
+  @IsNotEmpty()
+  @IsNumber()
+  price: number;
 
-    @IsNotEmpty()
-    priceType: PriceType;
+  @IsNotEmpty()
+  priceType: PriceType;
+
+  @IsOptional()
+  updateAllRecords?: boolean;
 }
