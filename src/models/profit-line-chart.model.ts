@@ -14,12 +14,14 @@ export class ProfitLineChartDataModel {
   data?: number[];
   fill?: boolean;
   tension?: number;
+  buyPrice?: number;
 
-  constructor(label?: string, borderColor?: string, data?: number[], fill?: boolean, tension?: number) {
+  constructor(label?: string, borderColor?: string, data?: number[], fill?: boolean, tension?: number, buyPrice?: number) {
       this.label = label;
       this.borderColor = borderColor;
       this.data = data;
       this.fill = fill;
       this.tension = tension;
+      this.buyPrice = buyPrice;
   }
 }

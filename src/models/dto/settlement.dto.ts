@@ -19,7 +19,7 @@ export class SettlementDto {
   @IsOptional()
   @IsString()
   @MaxLength(300)
-  @MinLength(10)
+  @MinLength(0)
   linkUrl?: string;
 
   @IsNotEmpty()
