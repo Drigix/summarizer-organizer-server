@@ -37,7 +37,12 @@ export class SoldInvestmentService {
     const purchasesPricesToChart = soldInvestments.map(s => s.buyPrice * (s?.amount ?? 1));
     const currentPricesToChart = soldInvestments.map(s => s.sellPrice * (s?.amount ?? 1));
     const profitToChart = soldInvestments.map(s => s.profit * (s?.amount ?? 1));
-    const profitPercentToChart = soldInvestments.map(s => this.calculateProfitPercent(s.buyPrice * (s?.amount ?? 1), s.profit * (s?.amount ?? 1)));
+    const profitPercentToChart = soldInvestments.map((s) =>
+      PriceUtils.calculateProfitPercentToLabelChart(
+        s.buyPrice * (s?.amount ?? 1),
+        s.profit * (s?.amount ?? 1),
+      ),
+    );
     const verticalBarModel = new VerticalBarModel(
       soldInvestments.map(
         (s: any, index: number) => `${s.description} [${profitPercentToChart[index]}]`,
@@ -80,9 +85,5 @@ export class SoldInvestmentService {
     soldInvestment.savingType = settlementSavingDto.savingType;
     soldInvestment.linkUrl = settlementSavingDto.linkUrl;
     return soldInvestment;
-  }
-
-  private calculateProfitPercent(buyPrice: number, profit: number): string {
-    return `${Number((profit * 100) / buyPrice).toFixed(2)}%`;
   }
 }

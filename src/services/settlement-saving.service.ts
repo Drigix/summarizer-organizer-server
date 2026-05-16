@@ -16,6 +16,7 @@ import { RefreshPriceService } from './refresh-price.service';
 import { ChartColorEnum } from '../models/enums/chart-color.enum';
 import { ChartIconEnum } from '../models/enums/chart-icon.enum';
 import { TranslationLabelUtils } from '../utils/translation-label.utils';
+import { PriceUtils } from '../utils/price.utils';
 
 @Injectable()
 export class SettlementSavingService {
@@ -186,6 +187,8 @@ export class SettlementSavingService {
       .exec();
     const monthBondsProfitMap = new Map<number, number>();
     const monthDepositsProfitMap = new Map<number, number>();
+    let buyPriceBonds = 0;
+    let buyPriceDeposits = 0;
     const currentDate = new Date();
     const bonds = settlements.filter(
       (s) => s.savingType === SettlementSavingEnum.BONDS,
@@ -194,6 +197,7 @@ export class SettlementSavingService {
       (s) => s.savingType === SettlementSavingEnum.DEPOSIT,
     );
     bonds.forEach((b) => {
+      buyPriceBonds += b.price;
       const monthsDiff = DateUtil.calculateMonthsBetween(b.date, currentDate);
       let index = 1;
       for (let i = monthsDiff; i >= 0; i--) {
@@ -217,6 +221,7 @@ export class SettlementSavingService {
       }
     });
     deposits.forEach((b) => {
+      buyPriceDeposits += b.price
       const monthsDiff = DateUtil.calculateMonthsBetween(b.date, currentDate);
       let index = 1;
       for (let i = monthsDiff; i >= 0; i--) {
@@ -249,7 +254,7 @@ export class SettlementSavingService {
       bondsData.push(monthBondsProfitMap.get(i));
     }
     for (let i = currentDate.getMonth(); i >= 0; i--) {
-      depositsData.push(monthDepositsProfitMap.get(i));
+        depositsData.push(monthDepositsProfitMap.get(i));
     }
     const profitLineChartDataModel: ProfitLineChartDataModel[] = [];
     profitLineChartDataModel.push(
@@ -259,6 +264,7 @@ export class SettlementSavingService {
         bondsData,
         false,
         0.4,
+        buyPriceBonds
       ),
       new ProfitLineChartDataModel(
         TranslationLabelUtils.SETTLEMENT_DEPOSITS_LABEL,
@@ -266,6 +272,7 @@ export class SettlementSavingService {
         depositsData,
         false,
         0.4,
+        buyPriceDeposits
       ),
     );
     const profitLineChartModel = new ProfitLineChartModel(
@@ -294,8 +301,17 @@ export class SettlementSavingService {
     const currentPricesToChart = settlements.map(
       (s) => Math.round(s.currentPrice * (s?.amount ?? 1)),
     );
+    const profitPercentToChart = settlements.map((s) =>
+      PriceUtils.calculateNotSellProfitPercentToLabelChart(
+        s.price * (s?.amount ?? 1),
+        s.currentPrice * (s?.amount ?? 1),
+      ),
+    );
     const verticalBarModel = new VerticalBarModel(
-      settlements.map((s) => s.description),
+      settlements.map(
+        (s: any, index: number) =>
+          `${s.description} [${profitPercentToChart[index]}]`,
+      ),
       [
         new VerticalBarDataModel(
           TranslationLabelUtils.SETTLEMENT_BUY_PRICE_LABEL,
