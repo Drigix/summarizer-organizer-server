@@ -109,12 +109,12 @@ export class SettlementService {
   }
 
   async findAllByDateBetween(
-    fromDate: string,
-    toDate: string,
+    dateFrom: string,
+    dateTo: string,
   ): Promise<Settlement[]> {
     return this.settlementModel
       .find({
-        date: { $gte: new Date(fromDate), $lte: new Date(toDate) },
+        date: { $gte: new Date(dateFrom), $lte: new Date(dateTo) },
       })
       .exec();
   }
