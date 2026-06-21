@@ -6,6 +6,7 @@ import { SettlementModule } from './modules/settlement.module';
 import { SettlementSavingModule } from './modules/settlement-saving.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SoldInvestmentModule } from './modules/sold-investment.module';
+import { DataExtractorModule } from './modules/data-extractor.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { SoldInvestmentModule } from './modules/sold-investment.module';
     UserModule,
     SettlementModule,
     SettlementSavingModule,
-    SoldInvestmentModule
+    SoldInvestmentModule,
+    DataExtractorModule
   ],
   exports: [
   ],
