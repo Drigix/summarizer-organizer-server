@@ -30,9 +30,9 @@ export class FileExtractorService {
         data.forEach(item => {
             worksheet.addRow({
                 date: item.date,
-                price_type: item.price_type,
+                price_type: item.priceType,
                 description: item.description,
-                link_url: item.link_url,
+                link_url: item.linkUrl,
                 price: item.price
             });
         });
