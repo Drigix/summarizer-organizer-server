@@ -7,15 +7,21 @@ import { SettlementSavingModule } from './modules/settlement-saving.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SoldInvestmentModule } from './modules/sold-investment.module';
 import { DataExtractorModule } from './modules/data-extractor.module';
+import { MarketDataModule } from './modules/market-data.module';
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRoot('mongodb://localhost:27017/sum_org_db'),
     UserModule,
     SettlementModule,
     SettlementSavingModule,
     SoldInvestmentModule,
-    DataExtractorModule
+    DataExtractorModule,
+    MarketDataModule
   ],
   exports: [
   ],
