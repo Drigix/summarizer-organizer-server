@@ -2,6 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
 export class SettlementSaving {
+
+  @Prop({ required: false })
+  stockSymbol?: string;
+
   @Prop({ required: true })
   date: Date;
 
@@ -22,6 +26,9 @@ export class SettlementSaving {
 
   @Prop({ required: false })
   currentPrice?: number;
+
+  @Prop({ required: false })
+  stockBuyPriceAverage?: number;
 
   @Prop({ required: true })
   savingType: string;

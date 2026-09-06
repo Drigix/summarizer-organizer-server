@@ -3,6 +3,12 @@ import { PriceType } from "../types/price.type";
 import { SettlementSavingType } from "../types/settlement-saving.type";
 
 export class SettlementSavingDto {
+    @IsOptional()
+    @IsString()
+    @MaxLength(10)
+    @MinLength(1)
+    stockSymbol?: string;
+
     @IsNotEmpty()
     @IsDateString()
     date: Date;
