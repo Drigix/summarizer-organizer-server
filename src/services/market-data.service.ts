@@ -12,10 +12,8 @@ export class MarketDataService {
     this.baseUrl =
       this.configService.get<string>('TWELVE_DATA_BASE_URL') ??
       'https://api.twelvedata.com';
-    Logger.debug(`MarketDataService baseUrl: ${this.baseUrl}`);
     this.apiKey =
       this.configService.get<string>('TWELVE_DATA_API_KEY') ?? '';
-    Logger.debug(`MarketDataService apiKey: ${this.apiKey}`);
 
     if (!this.apiKey) {
       throw new Error('TWELVE_DATA_API_KEY is not configured');
