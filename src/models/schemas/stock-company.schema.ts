@@ -16,6 +16,9 @@ export class StockCompany {
     currentPrice: number;
 
     @Prop({ required: true })
+    currency: string;
+
+    @Prop({ required: true })
     updatedAt: Date;
 }
 
