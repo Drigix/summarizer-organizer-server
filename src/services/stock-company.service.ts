@@ -31,4 +31,8 @@ export class StockCompanyService {
         stockCompany.updatedAt = new Date();
         return await stockCompany.save();
     }
+
+    async getAllStockCompanies(): Promise<StockCompany[]> {
+        return await this.stockCompanyModel.find().exec();
+    }
 }
