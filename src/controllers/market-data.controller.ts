@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Put } from "@nestjs/common";
+import { StockCompanyDto } from "src/models/dto/stock-company.dto";
 import { StockCompany } from "src/models/schemas/stock-company.schema";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
 import { MarketDataService } from "src/services/market-data.service";
@@ -12,7 +13,7 @@ public constructor(
   ) {}
 
   @Get('/stock-company/all')
-  public async getAllStockCompanies(): Promise<StockCompany[]> {
+  public async getAllStockCompanies(): Promise<StockCompanyDto[]> {
     return this.stockCompanyService.getAllStockCompanies();
   }
 
@@ -22,7 +23,7 @@ public constructor(
   }
 
   @Put('/stock-price/:symbol')
-  public async updateStockCompanyPrice(@Param('symbol') symbol: string): Promise<StockCompany> {
+  public async updateStockCompanyPrice(@Param('symbol') symbol: string): Promise<StockCompanyDto> {
     const stockPrice = await this.marketDataService.getPrice(symbol);
     return this.stockCompanyService.updateStockPrice(stockPrice);
   }

@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { StockCompany } from "src/models/schemas/stock-company.schema";
 import { Model } from "mongoose";
-import { InjectModel } from "node_modules/@nestjs/mongoose/dist/common/mongoose.decorators";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
+import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
 export class StockCompanyService {
