@@ -5,6 +5,7 @@ export class StockCompanyDto {
     @IsString()
     stockSymbol: string;
 
+    @IsOptional()
     icon?: string;
 
     @IsNotEmpty()

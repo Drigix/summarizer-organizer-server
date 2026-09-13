@@ -1,6 +1,5 @@
-import { Controller, Get, Param, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from "@nestjs/common";
 import { StockCompanyDto } from "src/models/dto/stock-company.dto";
-import { StockCompany } from "src/models/schemas/stock-company.schema";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
 import { MarketDataService } from "src/services/market-data.service";
 import { StockCompanyService } from "src/services/stock-company.service";
@@ -15,6 +14,24 @@ public constructor(
   @Get('/stock-company/all')
   public async getAllStockCompanies(): Promise<StockCompanyDto[]> {
     return this.stockCompanyService.getAllStockCompanies();
+  }
+
+  @Post('/stock-company')
+  @HttpCode(204)
+  public async createStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
+    return this.stockCompanyService.createStockCompany(stockCompanyDto);
+  }
+
+  @Put('/stock-company')
+  @HttpCode(204)
+  public async updateStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
+    return this.stockCompanyService.updateStockCompany(stockCompanyDto);
+  }
+
+  @Delete('/stock-company/:symbol')
+  @HttpCode(204)
+  public async deleteStockCompany(@Param('symbol') symbol: string): Promise<void> {
+    return this.stockCompanyService.deleteStockCompany(symbol);
   }
 
   @Get('/stock-price/:symbol')
