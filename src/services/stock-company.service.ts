@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { StockCompany } from "src/models/schemas/stock-company.schema";
 import { Model } from "mongoose";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
 import { InjectModel } from "@nestjs/mongoose";
 import { StockCompanyDto } from "src/models/dto/stock-company.dto";
+import { IconUtil } from "src/utils/icon.util";
 
 @Injectable()
 export class StockCompanyService {
@@ -14,20 +15,35 @@ export class StockCompanyService {
       ) { }
 
     async createStockCompany(stockCompanyDto: StockCompanyDto): Promise<StockCompany> {
-        stockCompanyDto.updatedAt = new Date();
-        const createdStockCompany = new this.stockCompanyModel(stockCompanyDto);
+        const parsedIcon = IconUtil.parseIconDataUrl(stockCompanyDto.icon);
+        const createdStockCompany = new this.stockCompanyModel({
+            stockSymbol: stockCompanyDto.stockSymbol,
+            companyName: stockCompanyDto.companyName,
+            currency: stockCompanyDto.currency,
+            currentPrice: stockCompanyDto.currentPrice,
+            updatedAt: new Date(),
+            icon: parsedIcon?.buffer,
+            iconContentType: parsedIcon?.contentType,
+        });
         return await createdStockCompany.save();
     }
 
     async updateStockCompany(stockCompanyDto: StockCompanyDto): Promise<StockCompany> {
         const stockCompany = await this.stockCompanyModel.findOne({ stockSymbol: stockCompanyDto.stockSymbol });
         if (!stockCompany) {
-            throw new Error(`Stock company with symbol ${stockCompanyDto.stockSymbol} not found`);
+            throw new NotFoundException(`Stock company with symbol ${stockCompanyDto.stockSymbol} not found`);
         }
         stockCompany.companyName = stockCompanyDto.companyName;
         stockCompany.currentPrice = stockCompanyDto.currentPrice;
         stockCompany.currency = stockCompanyDto.currency;
         stockCompany.updatedAt = new Date();
+
+        if (stockCompanyDto.icon) {
+            const parsedIcon = IconUtil.parseIconDataUrl(stockCompanyDto.icon);
+            stockCompany.icon = parsedIcon?.buffer;
+            stockCompany.iconContentType = parsedIcon?.contentType;
+        }
+
         return await stockCompany.save();
     }
 

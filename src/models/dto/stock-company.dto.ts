@@ -23,4 +23,16 @@ export class StockCompanyDto {
     @IsNotEmpty()
     @IsDateString()
     updatedAt: Date;
+
+    fromEntity(entity: any): StockCompanyDto {
+        this.stockSymbol = entity.stockSymbol;
+        this.companyName = entity.companyName;
+        this.icon = entity.icon
+            ? `data:${entity.iconContentType};base64,${entity.icon.toString('base64')}`
+            : undefined;
+        this.currency = entity.currency;
+        this.currentPrice = entity.currentPrice;
+        this.updatedAt = entity.updatedAt;
+        return this;
+    }
 }

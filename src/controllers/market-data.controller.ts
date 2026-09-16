@@ -13,19 +13,19 @@ public constructor(
 
   @Get('/stock-company/all')
   public async getAllStockCompanies(): Promise<StockCompanyDto[]> {
-    return this.stockCompanyService.getAllStockCompanies();
+    return (await this.stockCompanyService.getAllStockCompanies()).map((company) => new StockCompanyDto().fromEntity(company));
   }
 
   @Post('/stock-company')
   @HttpCode(204)
   public async createStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
-    return this.stockCompanyService.createStockCompany(stockCompanyDto);
+    return  new StockCompanyDto().fromEntity(await this.stockCompanyService.createStockCompany(stockCompanyDto));
   }
 
   @Put('/stock-company')
   @HttpCode(204)
   public async updateStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
-    return this.stockCompanyService.updateStockCompany(stockCompanyDto);
+    return new StockCompanyDto().fromEntity(await this.stockCompanyService.updateStockCompany(stockCompanyDto));
   }
 
   @Delete('/stock-company/:symbol')
@@ -42,6 +42,6 @@ public constructor(
   @Put('/stock-price/:symbol')
   public async updateStockCompanyPrice(@Param('symbol') symbol: string): Promise<StockCompanyDto> {
     const stockPrice = await this.marketDataService.getPrice(symbol);
-    return this.stockCompanyService.updateStockPrice(stockPrice);
+    return new StockCompanyDto().fromEntity(await this.stockCompanyService.updateStockPrice(stockPrice));
   }
 }
