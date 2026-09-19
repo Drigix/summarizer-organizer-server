@@ -1,8 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { StockCompany } from "src/models/schemas/stock-company.schema";
 import { Model } from "mongoose";
-import { InjectModel } from "node_modules/@nestjs/mongoose/dist/common/mongoose.decorators";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
+import { InjectModel } from "@nestjs/mongoose";
+import { StockCompanyDto } from "src/models/dto/stock-company.dto";
+import { IconUtil } from "src/utils/icon.util";
 
 @Injectable()
 export class StockCompanyService {
@@ -12,6 +14,46 @@ export class StockCompanyService {
         private stockCompanyModel: Model<StockCompany>
       ) { }
 
+    async createStockCompany(stockCompanyDto: StockCompanyDto): Promise<StockCompany> {
+        const parsedIcon = IconUtil.parseIconDataUrl(stockCompanyDto.icon);
+        const createdStockCompany = new this.stockCompanyModel({
+            stockSymbol: stockCompanyDto.stockSymbol,
+            companyName: stockCompanyDto.companyName,
+            currency: stockCompanyDto.currency,
+            currentPrice: stockCompanyDto.currentPrice,
+            updatedAt: new Date(),
+            icon: parsedIcon?.buffer,
+            iconContentType: parsedIcon?.contentType,
+        });
+        return await createdStockCompany.save();
+    }
+
+    async updateStockCompany(stockCompanyDto: StockCompanyDto): Promise<StockCompany> {
+        const stockCompany = await this.stockCompanyModel.findOne({ stockSymbol: stockCompanyDto.stockSymbol });
+        if (!stockCompany) {
+            throw new NotFoundException(`Stock company with symbol ${stockCompanyDto.stockSymbol} not found`);
+        }
+        stockCompany.companyName = stockCompanyDto.companyName;
+        stockCompany.currentPrice = stockCompanyDto.currentPrice;
+        stockCompany.currency = stockCompanyDto.currency;
+        stockCompany.updatedAt = new Date();
+
+        if (stockCompanyDto.icon) {
+            const parsedIcon = IconUtil.parseIconDataUrl(stockCompanyDto.icon);
+            stockCompany.icon = parsedIcon?.buffer;
+            stockCompany.iconContentType = parsedIcon?.contentType;
+        }
+
+        return await stockCompany.save();
+    }
+
+    async deleteStockCompany(symbol: string): Promise<void> {
+        const stockCompany = await this.stockCompanyModel.findOne({ stockSymbol: symbol });
+        if (!stockCompany) {
+            throw new Error(`Stock company with symbol ${symbol} not found`);
+        }
+        await await stockCompany.deleteOne();
+    }
 
     async updateStockListPrices(stockPrices: StockPrice[]): Promise<StockCompany[]> {
         const updatedCompanies: StockCompany[] = [];
@@ -28,6 +70,7 @@ export class StockCompanyService {
             throw new Error(`Stock company with symbol ${stockPrice.symbol} not found`);
         }
         stockCompany.currentPrice = stockPrice.price;
+        stockCompany.currency = stockPrice.currency || stockCompany.currency;
         stockCompany.updatedAt = new Date();
         return await stockCompany.save();
     }

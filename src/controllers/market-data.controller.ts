@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Put } from "@nestjs/common";
-import { StockCompany } from "src/models/schemas/stock-company.schema";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from "@nestjs/common";
+import { StockCompanyDto } from "src/models/dto/stock-company.dto";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
 import { MarketDataService } from "src/services/market-data.service";
 import { StockCompanyService } from "src/services/stock-company.service";
@@ -12,8 +12,26 @@ public constructor(
   ) {}
 
   @Get('/stock-company/all')
-  public async getAllStockCompanies(): Promise<StockCompany[]> {
-    return this.stockCompanyService.getAllStockCompanies();
+  public async getAllStockCompanies(): Promise<StockCompanyDto[]> {
+    return (await this.stockCompanyService.getAllStockCompanies()).map((company) => new StockCompanyDto().fromEntity(company));
+  }
+
+  @Post('/stock-company')
+  @HttpCode(204)
+  public async createStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
+    return  new StockCompanyDto().fromEntity(await this.stockCompanyService.createStockCompany(stockCompanyDto));
+  }
+
+  @Put('/stock-company')
+  @HttpCode(204)
+  public async updateStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
+    return new StockCompanyDto().fromEntity(await this.stockCompanyService.updateStockCompany(stockCompanyDto));
+  }
+
+  @Delete('/stock-company/:symbol')
+  @HttpCode(204)
+  public async deleteStockCompany(@Param('symbol') symbol: string): Promise<void> {
+    return this.stockCompanyService.deleteStockCompany(symbol);
   }
 
   @Get('/stock-price/:symbol')
@@ -22,8 +40,8 @@ public constructor(
   }
 
   @Put('/stock-price/:symbol')
-  public async updateStockCompanyPrice(@Param('symbol') symbol: string): Promise<StockCompany> {
+  public async updateStockCompanyPrice(@Param('symbol') symbol: string): Promise<StockCompanyDto> {
     const stockPrice = await this.marketDataService.getPrice(symbol);
-    return this.stockCompanyService.updateStockPrice(stockPrice);
+    return new StockCompanyDto().fromEntity(await this.stockCompanyService.updateStockPrice(stockPrice));
   }
 }

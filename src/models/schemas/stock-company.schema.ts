@@ -9,11 +9,17 @@ export class StockCompany {
     @Prop({ required: true })
     companyName: string;
 
-    // @Prop({ required: false })
-    // icon?: string;
+    @Prop({ required: false, type: Buffer })
+    icon?: Buffer;
+
+    @Prop({ required: false })
+    iconContentType?: string;
 
     @Prop({ required: true })
     currentPrice: number;
+
+    @Prop({ required: true })
+    currency: string;
 
     @Prop({ required: true })
     updatedAt: Date;
