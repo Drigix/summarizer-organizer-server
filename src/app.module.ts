@@ -8,14 +8,27 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SoldInvestmentModule } from './modules/sold-investment.module';
 import { DataExtractorModule } from './modules/data-extractor.module';
 import { MarketDataModule } from './modules/market-data.module';
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/sum_org_db'),
+    // MongooseModule.forRoot('mongodb://localhost:27017/sum_org_db'),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const host = configService.get<string>('MONGO_HOST');
+        const port = configService.get<string>('MONGO_PORT');
+        const db = configService.get<string>('MONGODB_NAME');
+        const username = configService.get<string>('MONGO_USERNAME');
+        const password = configService.get<string>('MONGO_PASSWORD');
+        return {
+          uri: `mongodb://${username}:${password}@${host}:${port}/${db}?authSource=admin`,
+        }
+      }
+    }),
     UserModule,
     SettlementModule,
     SettlementSavingModule,
