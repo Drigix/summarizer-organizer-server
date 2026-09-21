@@ -8,7 +8,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build -- --configuration production
+RUN npm run build --configuration production
 
 
 FROM node:22-alpine AS production
