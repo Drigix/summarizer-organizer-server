@@ -9,6 +9,7 @@ import { SoldInvestmentModule } from './modules/sold-investment.module';
 import { DataExtractorModule } from './modules/data-extractor.module';
 import { MarketDataModule } from './modules/market-data.module';
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { UsersModule } from './modules/auth/user.module';
 
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
     SettlementSavingModule,
     SoldInvestmentModule,
     DataExtractorModule,
-    MarketDataModule
+    MarketDataModule,
+    UsersModule
   ],
   exports: [
   ],
