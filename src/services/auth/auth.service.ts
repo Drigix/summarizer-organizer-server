@@ -1,45 +1,43 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from './user.service';
 import * as bcrypt from 'bcrypt';
+import { TokenPairModel } from 'src/models/auth/token-pair.model';
+import { User } from 'src/models/auth/user.schema';
+import { UserService } from './user.service';
 
 @Injectable()
 export class AuthService {
 
-  private saltOrRounds: number = 10;    
+  private saltOrRounds: number = 12;    
 
   constructor(
-    private usersService: UsersService,
+    private userService: UserService,
     private jwtService: JwtService
   ) {}
 
   async signIn(
     username: string,
     password: string,
-  ): Promise<{ access_token: string }> {
-    const user = await this.usersService.findOne(username);
+  ): Promise<TokenPairModel> {
+    const user = await this.userService.findOne(username);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     const isMatch = await bcrypt.compare(password, user?.password);
 
     if (!isMatch) {
       throw new UnauthorizedException();
     }
     const payload = { sub: user.userId, username: user.username };
-    return {
-      // 💡 Here the JWT secret key that's used for signing the payload 
-      // is the key that was passed in the JwtModule
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    const accessToken = await this.jwtService.signAsync(payload);
+    return new TokenPairModel(accessToken);
   }
 
-  async signUp(payload: any) {
+  async signUp(payload: User) {
     const hashPass = await bcrypt.hash(payload.password, this.saltOrRounds)
-
-    let data = {
-      ...payload,
-      password: hashPass
-    }
-
-    const user = await this.usersService.create(data);
-    return user;
+    payload.password = hashPass;
+    const user = await this.userService.create(payload);
+    const { password: _, ...safeUser } = user;
+    return safeUser;
   }
 }

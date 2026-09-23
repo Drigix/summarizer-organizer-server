@@ -1,7 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './modules/user.module';
 import { SettlementModule } from './modules/settlement.module';
 import { SettlementSavingModule } from './modules/settlement-saving.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -9,14 +8,13 @@ import { SoldInvestmentModule } from './modules/sold-investment.module';
 import { DataExtractorModule } from './modules/data-extractor.module';
 import { MarketDataModule } from './modules/market-data.module';
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { UsersModule } from './modules/auth/user.module';
+import { UserModule } from './modules/auth/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // MongooseModule.forRoot('mongodb://localhost:27017/sum_org_db'),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
@@ -30,13 +28,12 @@ import { UsersModule } from './modules/auth/user.module';
         }
       }
     }),
-    UserModule,
     SettlementModule,
     SettlementSavingModule,
     SoldInvestmentModule,
     DataExtractorModule,
     MarketDataModule,
-    UsersModule
+    UserModule
   ],
   exports: [
   ],
