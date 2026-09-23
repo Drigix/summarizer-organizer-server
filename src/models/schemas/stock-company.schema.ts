@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { BaseEntity } from '../base.schema';
 
 @Schema()
-export class StockCompany {
+export class StockCompany extends BaseEntity {
 
     @Prop({ required: true })
     stockSymbol: string;

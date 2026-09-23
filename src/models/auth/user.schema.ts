@@ -1,10 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { BaseEntity } from '../base.schema';
 
 @Schema()
-export class User {
-
-  @Prop({ required: true })
-  userId: string;
+export class User extends BaseEntity {
 
   @Prop({ required: true })
   username: string;

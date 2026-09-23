@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { BaseEntity } from '../base.schema';
 
 @Schema()
-export class Settlement {
+export class Settlement extends BaseEntity {
   @Prop({ required: true })
   date: Date;
 
