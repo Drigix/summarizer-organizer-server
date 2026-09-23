@@ -15,6 +15,7 @@ import { UserModule } from './modules/auth/user.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    // MongooseModule.forRoot('mongodb://localhost:27017/sum_org_db'),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
@@ -38,6 +39,8 @@ import { UserModule } from './modules/auth/user.module';
   exports: [
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService
+  ],
 })
 export class AppModule {}

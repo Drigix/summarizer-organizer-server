@@ -13,7 +13,8 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService
-  ) {}
+  ) {
+  }
 
   async signIn(
     username: string,
