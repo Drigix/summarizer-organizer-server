@@ -84,6 +84,7 @@ export class SoldInvestmentService {
     soldInvestment.description = settlementSavingDto.description;
     soldInvestment.savingType = settlementSavingDto.savingType;
     soldInvestment.linkUrl = settlementSavingDto.linkUrl;
+    soldInvestment.userId = settlementSavingDto.userId;
     return soldInvestment;
   }
 }

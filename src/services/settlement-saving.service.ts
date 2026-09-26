@@ -51,7 +51,9 @@ export class SettlementSavingService {
   async sell(
     id: string,
     settlementSavingDto: SettlementSavingDto,
+    userId: string
   ): Promise<void> {
+    settlementSavingDto.userId = userId;
     await this.soldInvestmentService.saveFromSettlementSaving(
       settlementSavingDto,
     );
@@ -59,7 +61,7 @@ export class SettlementSavingService {
     this.deleteById(id);
   }
 
-  async refreshGoldAndSilverPrices(ids: string[]): Promise<SettlementSaving[]> {
+  async refreshGoldAndSilverPrices(ids: string[], userId: string): Promise<SettlementSaving[]> {
     if (!ids || ids.length === 0) {
       return [];
     }
@@ -88,24 +90,30 @@ export class SettlementSavingService {
     return resultList;
   }
 
-  async findAllToDate(toDate: string): Promise<SettlementSaving[]> {
+  async findAllToDate(toDate: string, userId: string): Promise<SettlementSaving[]> {
     return this.settlementSavingModel
       .find({
+        userId,
         $or: [{ dateTo: { $gte: new Date(toDate) } }, { dateTo: null }],
       })
       .exec();
   }
 
-  async findSummarizeToChart(toDate: string): Promise<DoughnutChartModel> {
+  async findSummarizeToChart(toDate: string, userId: string): Promise<DoughnutChartModel> {
     const settlements = await this.settlementSavingModel
       .aggregate([
         {
           $match: {
             $expr: {
-              $or: [
-                { $gte: ['$dateTo', new Date(toDate)] },
-                { $eq: ['$dateTo', null] },
-              ],
+          $and: [
+                  { $eq: ['$userId', userId] },
+                  {
+                    $or: [
+                      { $gte: ['$dateTo', new Date(toDate)] },
+                      { $eq: ['$dateTo', null] },
+                    ],
+                  },
+                ],
             },
           },
         },
@@ -171,20 +179,24 @@ export class SettlementSavingService {
 
   async findBondsAndDepositsWithProfit(
     year: string,
+    userId: string
   ): Promise<ProfitLineChartModel> {
-    const settlements = await this.settlementSavingModel
-      .find({
-        $expr: {
-          $and: [
-            { $lte: [{ $year: '$date' }, Number(year)] },
-            { $gte: ['$dateTo', new Date()] },
-          ],
+    const settlements = await this.settlementSavingModel.aggregate([
+      {
+        $match: {
+          savingType: {
+            $in: [SettlementSavingEnum.BONDS, SettlementSavingEnum.DEPOSIT],
+          },
+          $expr: {
+            $and: [
+              { $eq: ['$userId', userId] },
+              { $lte: [{ $year: '$date' }, Number(year)] },
+              { $gte: ['$dateTo', new Date()] },
+            ],
+          },
         },
-        savingType: {
-          $in: [SettlementSavingEnum.BONDS, SettlementSavingEnum.DEPOSIT],
-        },
-      })
-      .exec();
+      },
+    ]);
     const monthBondsProfitMap = new Map<number, number>();
     const monthDepositsProfitMap = new Map<number, number>();
     let buyPriceBonds = 0;
@@ -284,9 +296,11 @@ export class SettlementSavingService {
 
   async findSummarizePricesChartDataset(
     savingType: SettlementSavingEnum,
+    userId: string
   ): Promise<VerticalBarModel> {
     const settlements = await this.settlementSavingModel
       .find({
+        userId: userId,
         savingType: { $in: [savingType] },
       })
       .exec();
@@ -332,11 +346,13 @@ export class SettlementSavingService {
 
   async findProfitPrices(
     settlementSavingType: SettlementSavingEnum,
+    userId: string
   ): Promise<SummarizeSettlement[]> {
     const settlements1 = await this.settlementSavingModel
       .aggregate([
         {
           $match: {
+            userId: userId,
             savingType: settlementSavingType,
           },
         },

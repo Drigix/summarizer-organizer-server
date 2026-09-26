@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, set } from 'mongoose';
 import { MONTHS_CONST } from 'src/models/const/month.const';
 import { SettlementDto } from 'src/models/dto/settlement.dto';
 import { Settlement } from 'src/models/schemas/settlement.schema';
@@ -248,6 +248,7 @@ export class SettlementService {
       settlementSavingDto.currentPrice,
     );
     settlement.priceType = priceType;
+    settlement.userId = settlementSavingDto.userId;
     return settlement;
   }
 }
