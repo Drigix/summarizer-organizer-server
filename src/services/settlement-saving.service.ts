@@ -17,6 +17,7 @@ import { ChartColorEnum } from '../models/enums/chart-color.enum';
 import { ChartIconEnum } from '../models/enums/chart-icon.enum';
 import { TranslationLabelUtils } from '../utils/translation-label.utils';
 import { PriceUtils } from '../utils/price.utils';
+import { StockCompany } from "src/models/schemas/stock-company.schema";
 
 @Injectable()
 export class SettlementSavingService {
@@ -397,6 +398,30 @@ export class SettlementSavingService {
       ),
     ];
     return summarizeSettlements;
+  }
+
+  async updatePricesInSettlementSavingByStockSymbol(userId: string, stockCompany: StockCompany): Promise<SettlementSaving> {
+    const settlementSaving = await this.settlementSavingModel.findOne({
+      userId: userId,
+      stockSymbol: { $in: [stockCompany.stockSymbol] }
+    }).exec();
+    if (!settlementSaving || !settlementSaving.stockBuyPriceAverage || settlementSaving.stockBuyPriceAverage === 0) {
+      return null;
+    }
+    settlementSaving.currentPrice = PriceUtils.calculateSavingSettlementPriceAfterStockPriceChange(
+      settlementSaving.price,
+      settlementSaving.stockBuyPriceAverage,
+      stockCompany.currentPrice
+    );
+    return await settlementSaving.save();
+  }
+
+  async findStockByStockSymbol(userId: string, stockSymbol: string): Promise<SettlementSaving> {
+    const settlementSaving = await this.settlementSavingModel.findOne({
+      userId: userId,
+      stockSymbol: { $in: [stockSymbol] }
+    }).exec();
+    return settlementSaving;
   }
 
   async deleteById(id: string): Promise<void> {

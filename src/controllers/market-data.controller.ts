@@ -3,13 +3,15 @@ import { CurrentUser, JwtPayload } from "src/config/current-user.decorator";
 import { StockCompanyDto } from "src/models/dto/stock-company.dto";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
 import { MarketDataService } from "src/services/market-data.service";
+import { SettlementSavingService } from "src/services/settlement-saving.service";
 import { StockCompanyService } from "src/services/stock-company.service";
 
 @Controller('/api/market-data')
 export class MarketDataController {
 public constructor(
     private readonly marketDataService: MarketDataService,
-    private readonly stockCompanyService: StockCompanyService
+    private readonly stockCompanyService: StockCompanyService,
+    private readonly settlementSavingService: SettlementSavingService
   ) {}
 
   @Get('/stock-company/all')
@@ -43,8 +45,13 @@ public constructor(
   }
 
   @Put('/stock-price/:symbol')
-  public async updateStockCompanyPrice(@Param('symbol') symbol: string): Promise<StockCompanyDto> {
+  public async updateStockCompanyPrice(
+    @CurrentUser() user: JwtPayload,
+    @Param('symbol') symbol: string
+  ): Promise<StockCompanyDto> {
     const stockPrice = await this.marketDataService.getPrice(symbol);
-    return new StockCompanyDto().fromEntity(await this.stockCompanyService.updateStockPrice(stockPrice));
+    const updatedStockCompany = await this.stockCompanyService.updateStockPrice(stockPrice);
+    await this.settlementSavingService.updatePricesInSettlementSavingByStockSymbol(user.sub, updatedStockCompany);
+    return new StockCompanyDto().fromEntity(updatedStockCompany);
   }
 }

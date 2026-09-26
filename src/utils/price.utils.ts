@@ -34,4 +34,13 @@ export class PriceUtils {
   ): string {
     return `${Number((profit * 100) / buyPrice).toFixed(2)}%`;
   }
+
+  static calculateSavingSettlementPriceAfterStockPriceChange(
+    investmentAmount: number,
+    stockBuyPriceAverage: number,
+    currentStockPrice: number
+  ): number {
+    const updatedCurrentPrice =  Number((investmentAmount * currentStockPrice) / stockBuyPriceAverage).toFixed(2);
+    return Number(updatedCurrentPrice);
+  }
 }

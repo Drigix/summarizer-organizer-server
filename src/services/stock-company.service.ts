@@ -24,6 +24,7 @@ export class StockCompanyService {
             updatedAt: new Date(),
             icon: parsedIcon?.buffer,
             iconContentType: parsedIcon?.contentType,
+            userId: stockCompanyDto.userId
         });
         return await createdStockCompany.save();
     }
