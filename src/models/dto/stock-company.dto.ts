@@ -1,6 +1,7 @@
 import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { BaseDto } from "./base.dto";
 
-export class StockCompanyDto {
+export class StockCompanyDto extends BaseDto {
     @IsNotEmpty()
     @IsString()
     stockSymbol: string;

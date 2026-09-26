@@ -1,7 +1,8 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { PriceType } from "../types/price.type";
+import { BaseDto } from "./base.dto";
 
-export class SettlementDto {
+export class SettlementDto extends BaseDto {
   @IsNotEmpty()
   @IsString()
   date: Date;
