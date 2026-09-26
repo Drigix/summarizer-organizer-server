@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Logger, Param, Post, Put } from "@nestjs/common";
+import { CurrentUser, JwtPayload } from "src/config/current-user.decorator";
 import { StockCompanyDto } from "src/models/dto/stock-company.dto";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
 import { MarketDataService } from "src/services/market-data.service";
@@ -12,19 +13,21 @@ public constructor(
   ) {}
 
   @Get('/stock-company/all')
-  public async getAllStockCompanies(): Promise<StockCompanyDto[]> {
-    return (await this.stockCompanyService.getAllStockCompanies()).map((company) => new StockCompanyDto().fromEntity(company));
+  public async getAllStockCompanies(@CurrentUser() user: JwtPayload): Promise<StockCompanyDto[]> {
+    return (await this.stockCompanyService.getAllStockCompanies(user.sub)).map((company) => new StockCompanyDto().fromEntity(company));
   }
 
   @Post('/stock-company')
   @HttpCode(204)
-  public async createStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
+  public async createStockCompany(@Body() stockCompanyDto: StockCompanyDto, @CurrentUser() user: JwtPayload): Promise<StockCompanyDto> {
+    stockCompanyDto.userId = user.sub;
     return  new StockCompanyDto().fromEntity(await this.stockCompanyService.createStockCompany(stockCompanyDto));
   }
 
   @Put('/stock-company')
   @HttpCode(204)
-  public async updateStockCompany(@Body() stockCompanyDto: StockCompanyDto): Promise<StockCompanyDto> {
+  public async updateStockCompany(@Body() stockCompanyDto: StockCompanyDto, @CurrentUser() user: JwtPayload): Promise<StockCompanyDto> {
+    stockCompanyDto.userId = user.sub;
     return new StockCompanyDto().fromEntity(await this.stockCompanyService.updateStockCompany(stockCompanyDto));
   }
 

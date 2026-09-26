@@ -75,7 +75,7 @@ export class StockCompanyService {
         return await stockCompany.save();
     }
 
-    async getAllStockCompanies(): Promise<StockCompany[]> {
-        return await this.stockCompanyModel.find().exec();
+    async getAllStockCompanies(userId: string): Promise<StockCompany[]> {
+        return await this.stockCompanyModel.find({userId: userId}).exec();
     }
 }
