@@ -8,6 +8,7 @@ import {
 import { SettlementSavingEnum } from '../models/enums/settlement-saving.enum';
 import { VerticalBarModel } from '../models/vertical-bar.model';
 import { SoldInvestmentService } from '../services/sold-investment.service';
+import { CurrentUser, JwtPayload } from 'src/config/current-user.decorator';
 
 @Controller('/api/sold-investment')
 export class SoldInvestmentController {
@@ -16,11 +17,15 @@ export class SoldInvestmentController {
   ) {}
 
   @Get('/summarize-sold-investment/chart/:savingType/:year')
-  public getSummarizeSoldInvestmentToChart(@Param('savingType') savingType: SettlementSavingEnum, @Param('year') year: number): Promise<VerticalBarModel> {
+  public getSummarizeSoldInvestmentToChart(
+    @CurrentUser() user: JwtPayload,
+    @Param('savingType') savingType: SettlementSavingEnum, 
+    @Param('year') year: number
+  ): Promise<VerticalBarModel> {
     Logger.debug('Request to get summarize' + savingType + ' profit to chart');
     if (!savingType) {
       throw new NotFoundException('Invalid saving type');
     }
-    return this.soldInvestmentService.findSummarizeSoldInvestmentChartDataset(savingType, year);
+    return this.soldInvestmentService.findSummarizeSoldInvestmentChartDataset(savingType, year, user.sub);
   }
 }

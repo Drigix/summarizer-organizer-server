@@ -24,13 +24,18 @@ export class SoldInvestmentService {
     return this.soldInvestmentModel.create(soldInvestment);
   }
 
-  async findSummarizeSoldInvestmentChartDataset(savingType: SettlementSavingEnum, year: number): Promise<VerticalBarModel> {
+  async findSummarizeSoldInvestmentChartDataset(savingType: SettlementSavingEnum, year: number, userId: string): Promise<VerticalBarModel> {
     const yearNotEmpty = year ?? new Date().getFullYear();
     const soldInvestments = await this.soldInvestmentModel.aggregate([
       {
         $match: {
           savingType: { $in: ['stock'] },
-          $expr: { $eq: [{ $year: '$sellDate' }, Number(yearNotEmpty)] },
+          $expr: {
+            $and: [
+              {$eq: ['$userId', userId ]},
+              {$eq: [{ $year: '$sellDate' }, Number(yearNotEmpty)] }
+            ],
+          },
         },
       },
     ]);
