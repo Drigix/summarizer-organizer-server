@@ -111,9 +111,11 @@ export class SettlementService {
   async findAllByDateBetween(
     dateFrom: string,
     dateTo: string,
+    userId: string
   ): Promise<Settlement[]> {
     return this.settlementModel
       .find({
+        userId: userId,
         date: { $gte: new Date(dateFrom), $lte: new Date(dateTo) },
       })
       .exec();
@@ -122,9 +124,11 @@ export class SettlementService {
   async findSummarizeSettlementsByDateBetween(
     fromDate: string,
     toDate: string,
+    userId: string
   ): Promise<SummarizeSettlement[]> {
     const settlements = await this.settlementModel
       .find({
+        userId: userId,
         priceType: { $in: ['in', 'out'] },
         date: { $gte: new Date(fromDate), $lte: new Date(toDate) },
       })
@@ -170,13 +174,16 @@ export class SettlementService {
     return summarizeSettlements;
   }
 
-  async findChartDatasetInYear(year: number): Promise<VerticalBarModel> {
+  async findChartDatasetInYear(year: number, userId: string): Promise<VerticalBarModel> {
     const settlements = await this.settlementModel
       .aggregate([
         {
           $match: {
             $expr: {
-              $eq: [{ $year: '$date' }, Number(year)],
+              $and: [
+                {$eq: ['$userId', userId]},
+                {$eq: [{ $year: '$date' }, Number(year)]}
+              ]
             },
           },
         },

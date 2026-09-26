@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, Logger, Param, Post, Put, Request, UsePipes, ValidationPipe } from "@nestjs/common";
 import mongoose from "mongoose";
+import { CurrentUser, JwtPayload } from "src/config/current-user.decorator";
 import { SettlementDto } from "src/models/dto/settlement.dto";
 import { Settlement } from "src/models/schemas/settlement.schema";
 import { SummarizeSettlement } from "src/models/summarize-settlement.model";
@@ -13,14 +14,19 @@ export class SettlementController {
 
     @Post()
     @HttpCode(204)
-    public createSettlement(@Body() settlementDto: SettlementDto): Promise<Settlement> {
+    public createSettlement(@Body() settlementDto: SettlementDto, @CurrentUser() user: JwtPayload): Promise<Settlement> {
         Logger.debug('Request to create new settlement');
+        settlementDto.userId = user.sub;
         return this.settlementService.save(settlementDto);
     }
 
     @Put(':id')
     @UsePipes(new ValidationPipe())
-    public updateSettlement(@Param('id') id?: string, @Body() settlementDto?: SettlementDto): Promise<Settlement> {
+    public updateSettlement(
+        @CurrentUser() user: JwtPayload, 
+        @Param('id') id?: string, 
+        @Body() settlementDto?: SettlementDto
+    ): Promise<Settlement> {
         Logger.debug('Request to update settlement: ' + id);
         if(!id) {
             throw new HttpException('Id is required', 400);
@@ -29,13 +35,8 @@ export class SettlementController {
         if(!isValid) { 
             throw new HttpException('Id is invalid', 400);
         }
+        settlementDto.userId = user.sub;
         return this.settlementService.update(id, settlementDto);
-    }
-
-    @Get()
-    public getSettlements(): Promise<Settlement[]> {
-        Logger.debug('Request to get all settlements');
-        return this.settlementService.findAll();
     }
 
     @Get(':text')
@@ -47,36 +48,33 @@ export class SettlementController {
         return this.settlementService.findAllByDescription(text);
     }
 
-    // @Get('/:userId/:fromDate/:toDate')
-    // public getSettlementsForUserAndDate(
-    //     @Param('userId') userId: number, 
-    //     @Param('fromDate') fromDate: string, 
-    //     @Param('toDate') toDate: string): Promise<Settlement[]> {
-    //     Logger.debug('Request to get settlement for user: ' + userId + ' from ' + fromDate + ' to ' + toDate);
-    //     return this.settlementService.findAllByUserIdAndDateBetween(userId, fromDate, toDate);
-    // }
-
     @Get('/chart/:year')
     public getAllSettlementsInYearToChart(
-        @Param('year') year: number): Promise<VerticalBarModel> {
+        @CurrentUser() user: JwtPayload,
+        @Param('year') year: number
+    ): Promise<VerticalBarModel> {
         Logger.debug('Request to get all settlements in year: ' + year + ' to chart');
-        return this.settlementService.findChartDatasetInYear(year);
+        return this.settlementService.findChartDatasetInYear(year, user.sub);
     }
 
     @Get('/:fromDate/:toDate')
     public getSettlementsForDates(
+        @CurrentUser() user: JwtPayload,
         @Param('fromDate') fromDate: string, 
-        @Param('toDate') toDate: string): Promise<Settlement[]> {
+        @Param('toDate') toDate: string
+    ): Promise<Settlement[]> {
         Logger.debug('Request to get settlement between: ' + fromDate + ' and ' + toDate);
-        return this.settlementService.findAllByDateBetween(fromDate, toDate);
+        return this.settlementService.findAllByDateBetween(fromDate, toDate, user.sub);
     }
 
     @Get('/summarize/:fromDate/:toDate')
     public getSummarizeSettlementsForDates(
+        @CurrentUser() user: JwtPayload,
         @Param('fromDate') fromDate: string, 
-        @Param('toDate') toDate: string): Promise<SummarizeSettlement[]> {
+        @Param('toDate') toDate: string
+    ): Promise<SummarizeSettlement[]> {
         Logger.debug('Request to get summarize settlements between: ' + fromDate + ' and ' + toDate);
-        return this.settlementService.findSummarizeSettlementsByDateBetween(fromDate, toDate);
+        return this.settlementService.findSummarizeSettlementsByDateBetween(fromDate, toDate, user.sub);
     }
 
     @Delete(':id')

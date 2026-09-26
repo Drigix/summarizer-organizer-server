@@ -7,6 +7,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { CurrentUser, JwtPayload } from 'src/config/current-user.decorator';
 import { FileTypeEnum } from 'src/models/enums/file-type.enum';
 import { FileExtractorService } from 'src/services/file-extractor.service';
 import { SettlementService } from 'src/services/settlement.service';
@@ -20,6 +21,7 @@ public constructor(
 
   @Get('/settlement/:dateFrom/:dateTo/:fileType')
   async extractSettlementToFile(
+    @CurrentUser() user: JwtPayload,
     @Param('dateFrom') dateFrom: string, 
     @Param('dateTo') dateTo: string, 
     @Param('fileType') fileType: FileTypeEnum,
@@ -28,7 +30,7 @@ public constructor(
     if (!dateFrom || !dateTo || !fileType) {
       throw new BadRequestException('Invalid parameters for data extraction');
     }
-    const settlements = await this.settlementService.findAllByDateBetween(dateFrom, dateTo);
+    const settlements = await this.settlementService.findAllByDateBetween(dateFrom, dateTo, user.sub);
     const buffer = await this.fileExtractorService.extractToFile(fileType, settlements);
     res.set({
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
