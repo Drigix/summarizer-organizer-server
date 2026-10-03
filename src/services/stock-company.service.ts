@@ -30,10 +30,11 @@ export class StockCompanyService {
     }
 
     async updateStockCompany(stockCompanyDto: StockCompanyDto): Promise<StockCompany> {
-        const stockCompany = await this.stockCompanyModel.findOne({ stockSymbol: stockCompanyDto.stockSymbol });
+        const stockCompany = await this.stockCompanyModel.findOne({ stockSymbol: stockCompanyDto.oldStockSymbol });
         if (!stockCompany) {
             throw new NotFoundException(`Stock company with symbol ${stockCompanyDto.stockSymbol} not found`);
         }
+        stockCompany.stockSymbol = stockCompanyDto.stockSymbol;
         stockCompany.companyName = stockCompanyDto.companyName;
         stockCompany.currentPrice = stockCompanyDto.currentPrice;
         stockCompany.currency = stockCompanyDto.currency;

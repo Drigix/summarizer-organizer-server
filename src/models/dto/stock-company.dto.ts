@@ -6,6 +6,10 @@ export class StockCompanyDto extends BaseDto {
     @IsString()
     stockSymbol: string;
 
+    @IsNotEmpty()
+    @IsString()
+    oldStockSymbol: string;
+
     @IsOptional()
     icon?: string;
 
@@ -27,6 +31,7 @@ export class StockCompanyDto extends BaseDto {
 
     fromEntity(entity: any): StockCompanyDto {
         this.stockSymbol = entity.stockSymbol;
+        this.oldStockSymbol = entity.stockSymbol;
         this.companyName = entity.companyName;
         this.icon = entity.icon
             ? `data:${entity.iconContentType};base64,${entity.icon.toString('base64')}`
