@@ -427,4 +427,16 @@ export class SettlementSavingService {
   async deleteById(id: string): Promise<void> {
     this.settlementSavingModel.findByIdAndDelete(id).exec();
   }
+
+  async deleteStockSymbolInSavingSettlement(stockSymbol: string): Promise<void> {
+    const savingSettlements = await this.settlementSavingModel.find({
+      stockSymbol: stockSymbol
+    }).exec();
+    if (savingSettlements) {
+      for(const ss of savingSettlements) {
+        ss.stockSymbol = null;
+        await ss.save();
+      }
+    }
+  }
 }

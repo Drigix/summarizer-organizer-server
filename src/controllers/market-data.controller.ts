@@ -36,6 +36,7 @@ public constructor(
   @Delete('/stock-company/:symbol')
   @HttpCode(204)
   public async deleteStockCompany(@Param('symbol') symbol: string): Promise<void> {
+    await this.settlementSavingService.deleteStockSymbolInSavingSettlement(symbol);
     return this.stockCompanyService.deleteStockCompany(symbol);
   }
 
