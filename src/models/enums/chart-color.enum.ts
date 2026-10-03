@@ -1,10 +1,15 @@
 export enum ChartColorEnum {
-  BUY_PRICE_BLUE = '#577bb1',
-  BUY_PRICE_RED = '#fd876d',
-  SETTLEMENT_IN = '#67ab90',
-  SETTLEMENT_OUT = '#fd876d',
-  CURRENT_PRICE = '#67ab90',
-  SELL_PRICE = '#67ab90',
-  PROFIT_PRICE = '#ab9d67',
-  LOSS_PRICE = '#fd876d',
+  BUY_PRICE_BLUE = '#2563eb',
+
+  BUY_PRICE_RED = '#e11d48',
+
+  SETTLEMENT_IN = '#0d9488',
+  SETTLEMENT_OUT = '#e11d48',
+
+  CURRENT_PRICE = '#0891b2',
+  
+  SELL_PRICE = '#0f766e',
+
+  PROFIT_PRICE = '#7c3aed',
+  LOSS_PRICE = '#e11d48',
 }
