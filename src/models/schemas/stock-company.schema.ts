@@ -24,6 +24,9 @@ export class StockCompany extends BaseEntity {
 
     @Prop({ required: true })
     updatedAt: Date;
+
+    @Prop({ required: false })
+    updateSettlementSaving?: boolean;
 }
 
 export const StockCompanySchema = SchemaFactory.createForClass(StockCompany);

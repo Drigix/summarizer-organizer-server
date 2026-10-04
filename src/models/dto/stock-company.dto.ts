@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { BaseDto } from "./base.dto";
 
 export class StockCompanyDto extends BaseDto {
@@ -29,6 +29,10 @@ export class StockCompanyDto extends BaseDto {
     @IsDateString()
     updatedAt: Date;
 
+    @IsBoolean()
+    @IsOptional()
+    updateSettlementSaving?: boolean;
+
     fromEntity(entity: any): StockCompanyDto {
         this.stockSymbol = entity.stockSymbol;
         this.oldStockSymbol = entity.stockSymbol;
@@ -39,6 +43,7 @@ export class StockCompanyDto extends BaseDto {
         this.currency = entity.currency;
         this.currentPrice = entity.currentPrice;
         this.updatedAt = entity.updatedAt;
+        this.updateSettlementSaving = entity.updateSettlementSaving;
         return this;
     }
 }

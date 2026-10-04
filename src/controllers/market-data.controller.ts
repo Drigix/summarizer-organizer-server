@@ -30,7 +30,11 @@ public constructor(
   @HttpCode(204)
   public async updateStockCompany(@Body() stockCompanyDto: StockCompanyDto, @CurrentUser() user: JwtPayload): Promise<StockCompanyDto> {
     stockCompanyDto.userId = user.sub;
-    return new StockCompanyDto().fromEntity(await this.stockCompanyService.updateStockCompany(stockCompanyDto));
+    let updatedStockCompany = await this.stockCompanyService.updateStockCompany(stockCompanyDto);
+    if (stockCompanyDto.updateSettlementSaving) {
+      await this.settlementSavingService.updatePricesInSettlementSavingByStockSymbol(user.sub, updatedStockCompany);
+    }
+    return new StockCompanyDto().fromEntity(updatedStockCompany);
   }
 
   @Delete('/stock-company/:symbol')
