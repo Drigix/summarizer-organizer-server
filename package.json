@@ -35,7 +35,8 @@
     "mongoose": "^8.3.5",
     "mongoose-id-autoincrement": "^1.0.4",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "yahoo-finance2": "^4.0.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^12.0.0",
