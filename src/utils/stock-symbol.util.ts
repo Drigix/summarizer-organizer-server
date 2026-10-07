@@ -1,7 +1,7 @@
 export class StockSymbolUtils {
 
     static isStockSymbolForYahooFinance(symbol: string): boolean {
-        return this.isGpwStockSymbol(symbol) ||
+        return this.isGpwStockSymbol(symbol);
     }
 
     static isGpwStockSymbol(symbol: string): boolean {
