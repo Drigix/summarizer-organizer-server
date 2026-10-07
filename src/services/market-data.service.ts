@@ -2,11 +2,13 @@ import { Injectable, InternalServerErrorException, Logger, NotFoundException } f
 import { ConfigService } from "@nestjs/config";
 import { StockPrice } from "src/models/stock-market/stock-price.model";
 import { StockQuote } from "src/models/stock-market/stock-quote.model";
+import YahooFinance from "yahoo-finance2";
 
 @Injectable()
 export class MarketDataService {
   private readonly baseUrl: string;
   private readonly apiKey: string;
+  private readonly yahooFinance: any;
 
   constructor(private readonly configService: ConfigService) {
     this.baseUrl =
@@ -14,13 +16,25 @@ export class MarketDataService {
       'https://api.twelvedata.com';
     this.apiKey =
       this.configService.get<string>('TWELVE_DATA_API_KEY') ?? '';
-
+    this.yahooFinance = new YahooFinance();
     if (!this.apiKey) {
       throw new Error('TWELVE_DATA_API_KEY is not configured');
     }
   }
 
-  async getPrice(symbol: string): Promise<StockPrice> {
+  async getPrice(symbol: string, yahooFinance?: boolean): Promise<StockPrice> {
+    if (yahooFinance) {
+      const quote = await this.requestYahooFinance(symbol);
+      return {
+        symbol,
+        price: Number(quote.price),
+        currency: quote.currency,
+        exchange: quote.exchange,
+        datetime: quote.datetime,
+        timestamp: quote.timestamp
+      }
+    }
+
     const data = await this.request('/price', {
       symbol,
     });
@@ -128,6 +142,18 @@ export class MarketDataService {
     }
 
     return data;
+  }
+
+  private async requestYahooFinance(symbol: string): Promise<any> {
+      const quote = await this.yahooFinance.quote(symbol);
+      return {
+        symbol: symbol,
+        price: quote.regularMarketPrice,
+        currency: quote.currency,
+        exchange: quote.exchange,
+        datetime: quote.regularMarketTime,
+        timestamp: quote.regularMarketTimestamp,
+      };
   }
 
   private toNumber(value: unknown): number | null {
