@@ -24,8 +24,14 @@ import { UserModule } from './modules/auth/user.module';
         const db = configService.get<string>('MONGODB_NAME');
         const username = configService.get<string>('MONGO_USERNAME');
         const password = configService.get<string>('MONGO_PASSWORD');
-        return {
-          uri: `mongodb://${username}:${password}@${host}:${port}/${db}?authSource=admin`,
+        if (!!username && !!password) {
+          return {
+            uri: `mongodb://${username}:${password}@${host}:${port}/${db}?authSource=admin`,
+          }
+        } else {
+          return {
+            uri: `mongodb://${host}:${port}/${db}`,
+          }
         }
       }
     }),
