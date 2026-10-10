@@ -424,6 +424,14 @@ export class SettlementSavingService {
     return settlementSaving;
   }
 
+  async findAllWithStockSymbol(userId: string): Promise<SettlementSaving[]> {
+    const settlementSavings = await this.settlementSavingModel.find({
+      userId: userId,
+      stockSymbol: { $ne: null }
+    }).exec();
+    return settlementSavings;
+  } 
+
   async deleteById(id: string): Promise<void> {
     this.settlementSavingModel.findByIdAndDelete(id).exec();
   }

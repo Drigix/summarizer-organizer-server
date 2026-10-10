@@ -55,6 +55,23 @@ public constructor(
     @CurrentUser() user: JwtPayload,
     @Param('symbol') symbol: string
   ): Promise<StockCompanyDto> {
+    return await this.processStockPrice(symbol, user);
+  }
+
+  @Put('/stock-prices/all')
+  public async updateAllStockCompanyPrice(
+    @CurrentUser() user: JwtPayload
+  ): Promise<StockCompanyDto[]> {
+    const savingSettlementsWithStockSymbol = await this.settlementSavingService.findAllWithStockSymbol(user.sub);
+    const updatedStockCompanies: StockCompanyDto[] = [];
+    for (const savingSettlement of savingSettlementsWithStockSymbol) {
+      const updatedStockCompany = await this.processStockPrice(savingSettlement.stockSymbol, user);
+      updatedStockCompanies.push(updatedStockCompany);
+    }
+    return updatedStockCompanies;
+  }
+
+  private async processStockPrice(symbol: string, user: JwtPayload): Promise<StockCompanyDto> {
     const stockPrice = await this.marketDataService.getPrice(symbol, StockSymbolUtils.isStockSymbolForYahooFinance(symbol));
     const updatedStockCompany = await this.stockCompanyService.updateStockPrice(stockPrice);
     await this.settlementSavingService.updatePricesInSettlementSavingByStockSymbol(user.sub, updatedStockCompany);
