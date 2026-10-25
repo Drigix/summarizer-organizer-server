@@ -73,7 +73,7 @@ public constructor(
 
   private async processStockPrice(symbol: string, user: JwtPayload): Promise<StockCompanyDto> {
     const stockPrice = await this.marketDataService.getPrice(symbol, StockSymbolUtils.isStockSymbolForYahooFinance(symbol));
-    const updatedStockCompany = await this.stockCompanyService.updateStockPrice(stockPrice);
+    const updatedStockCompany = await this.stockCompanyService.updateStockPrice(user.sub, stockPrice);
     await this.settlementSavingService.updatePricesInSettlementSavingByStockSymbol(user.sub, updatedStockCompany);
     return new StockCompanyDto().fromEntity(updatedStockCompany);
   }

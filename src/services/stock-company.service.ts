@@ -57,17 +57,17 @@ export class StockCompanyService {
         await await stockCompany.deleteOne();
     }
 
-    async updateStockListPrices(stockPrices: StockPrice[]): Promise<StockCompany[]> {
+    async updateStockListPrices(userId: string, stockPrices: StockPrice[]): Promise<StockCompany[]> {
         const updatedCompanies: StockCompany[] = [];
         for (const stockPrice of stockPrices) {
-            const stoctkCompany = await this.updateStockPrice(stockPrice);
+            const stoctkCompany = await this.updateStockPrice(userId, stockPrice);
             updatedCompanies.push(stoctkCompany);
         }
         return updatedCompanies;
     }
 
-    async updateStockPrice(stockPrice: StockPrice): Promise<StockCompany> {
-        const stockCompany = await this.stockCompanyModel.findOne({ stockSymbol: stockPrice.symbol });
+    async updateStockPrice(userId: string, stockPrice: StockPrice): Promise<StockCompany> {
+        const stockCompany = await this.stockCompanyModel.findOne({ stockSymbol: stockPrice.symbol, userId: userId });
         if (!stockCompany) {
             throw new Error(`Stock company with symbol ${stockPrice.symbol} not found`);
         }
