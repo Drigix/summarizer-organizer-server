@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, set } from 'mongoose';
 import { MONTHS_CONST } from 'src/models/const/month.const';
@@ -174,36 +174,57 @@ export class SettlementService {
     return summarizeSettlements;
   }
 
+  async findChartDatasetInYears(years: number[], userId: string): Promise<VerticalBarModel> {
+    const pricesInToChart = new Map<number, number>();
+    const pricesOutToChart = new Map<number, number>();
+    years.sort((a, b) => a - b);
+      const settlements = await this.findAllSettlementsInYear(years, userId);
+      settlements.forEach((s) => {
+        const year = s._id.year;
+        if (s._id.priceType === 'in') {
+          pricesInToChart.set(year, (pricesInToChart.get(year) || 0) + s.price);
+        } else if (s._id.priceType === 'out') {
+          pricesOutToChart.set(year, (pricesOutToChart.get(year) || 0) + s.price);
+        }
+      });
+    // for (const year of years) {
+    //   const settlements = await this.findAllSettlementsInYear([year], userId);
+    //   settlements.forEach((s) => {
+    //     if (s._id.priceType === 'in') {
+    //       pricesInToChart.set(year, (pricesInToChart.get(year) || 0) + s.price);
+    //     } else if (s._id.priceType === 'out') {
+    //       pricesOutToChart.set(year, (pricesOutToChart.get(year) || 0) + s.price);
+    //     }
+    //   });
+    // }
+    const verticalBarModel = new VerticalBarModel(years.map(String), [
+      new VerticalBarDataModel(
+        TranslationLabelUtils.SETTLEMENT_IN_LABEL,
+        ChartColorEnum.SETTLEMENT_IN,
+        ChartColorEnum.SETTLEMENT_IN,
+        years.map((year) => pricesInToChart.get(year) || 0),
+      ),
+      new VerticalBarDataModel(
+        TranslationLabelUtils.SETTLEMENT_OUT_LABEL,
+        ChartColorEnum.SETTLEMENT_OUT,
+        ChartColorEnum.SETTLEMENT_OUT,
+        years.map((year) => pricesOutToChart.get(year) || 0),
+      ),
+      new VerticalBarDataModel(
+        TranslationLabelUtils.SETTLEMENT_BALANCE_LABEL,
+        ChartColorEnum.PROFIT_PRICE,
+        ChartColorEnum.PROFIT_PRICE,
+        years.map(
+          (year) =>
+            (pricesInToChart.get(year) || 0) - (pricesOutToChart.get(year) || 0),
+        )
+      )
+    ]);
+    return verticalBarModel;
+  }
+
   async findChartDatasetInYear(year: number, userId: string): Promise<VerticalBarModel> {
-    const settlements = await this.settlementModel
-      .aggregate([
-        {
-          $match: {
-            $expr: {
-              $and: [
-                {$eq: ['$userId', userId]},
-                {$eq: [{ $year: '$date' }, Number(year)]}
-              ]
-            },
-          },
-        },
-        {
-          $group: {
-            _id: {
-              month: { $month: '$date' },
-              priceType: '$priceType',
-            },
-            price: { $sum: '$price' },
-          },
-        },
-        {
-          $sort: {
-            '_id.month': 1,
-            '_id.priceType': 1,
-          },
-        },
-      ])
-      .exec();
+    const settlements = await this.findAllSettlementsInYear([year], userId);
     const pricesInToChart = [];
     const pricesOutToChart = [];
     settlements.forEach((s) => {
@@ -257,5 +278,71 @@ export class SettlementService {
     settlement.priceType = priceType;
     settlement.userId = settlementSavingDto.userId;
     return settlement;
+  }
+
+  private async findAllSettlementsInYear(years: number[], userId: string): Promise<any[]> {
+    if (years.length === 1) {   
+      const settlements = await this.settlementModel
+        .aggregate([
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {$eq: ['$userId', userId]},
+                  {$in: [{ $year: '$date' }, years.map(Number)]}
+                ]
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                month: { $month: '$date' },
+                priceType: '$priceType',
+              },
+              price: { $sum: '$price' },
+            },
+          },
+          {
+            $sort: {
+              '_id.month': 1,
+              '_id.priceType': 1,
+            },
+          },
+        ])
+        .exec();
+        return settlements;
+    } else {
+        const settlements = await this.settlementModel
+        .aggregate([
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {$eq: ['$userId', userId]},
+                  {$in: [{ $year: '$date' }, years.map(Number)]}
+                ]
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                year: { $year: '$date' },
+                priceType: '$priceType',
+              },
+              price: { $sum: '$price' },
+            },
+          },
+          {
+            $sort: {
+              '_id.year': 1,
+              '_id.priceType': 1,
+            },
+          },
+        ])
+        .exec();
+        return settlements;
+    }
   }
 }

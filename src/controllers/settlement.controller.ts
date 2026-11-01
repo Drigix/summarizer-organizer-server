@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, Logger, Param, Post, Put, Request, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, Logger, Param, Post, Put, Request, UsePipes, ValidationPipe, Query } from "@nestjs/common";
 import mongoose from "mongoose";
 import { CurrentUser, JwtPayload } from "src/config/current-user.decorator";
 import { SettlementDto } from "src/models/dto/settlement.dto";
@@ -55,6 +55,16 @@ export class SettlementController {
     ): Promise<VerticalBarModel> {
         Logger.debug('Request to get all settlements in year: ' + year + ' to chart');
         return this.settlementService.findChartDatasetInYear(year, user.sub);
+    }
+
+    @Get('/compareYears/chart')
+    public getAllSettlementsInYearsToChart(
+        @CurrentUser() user: JwtPayload,
+        @Query('years') years: string
+    ): Promise<VerticalBarModel> {
+        Logger.debug('Request to get all settlements in years: ' + years + ' to chart');
+        const convertedYears = years.split('^').map(year => Number(year));
+        return this.settlementService.findChartDatasetInYears(convertedYears, user.sub);
     }
 
     @Get('/:fromDate/:toDate')
