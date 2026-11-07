@@ -366,6 +366,9 @@ export class SettlementSavingService {
         },
       ])
       .exec();
+    if (!settlements1 || settlements1.length === 0) {
+        return [];
+    }
     let sumPriceIn = settlements1[0].currentPrice;
     let sumPriceOut = settlements1[0].price;
     const priceOnPlusSide = sumPriceIn - sumPriceOut;
