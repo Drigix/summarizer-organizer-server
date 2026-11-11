@@ -8,6 +8,8 @@ import { PdfExporter } from 'src/services/extractors/pdf-extractor.service';
 import { XlsxExporter } from 'src/services/extractors/xlsx-extractor.service';
 import { FileExtractorService } from 'src/services/extractors/file-extractor.service';
 import { SettlementService } from 'src/services/settlement.service';
+import { SettlementReport } from 'src/services/reports/settlements-report.service';
+import { REPORT_DEFINITIONS } from 'src/models/reports/definition-interface.report';
 
 @Module({
   imports: [
@@ -28,6 +30,12 @@ import { SettlementService } from 'src/services/settlement.service';
       provide: FILE_EXTRACTORS,
       useFactory: (...exporters) => exporters,
       inject: [XlsxExporter, CsvExporter, PdfExporter],
+    },
+    SettlementReport,
+    {
+      provide: REPORT_DEFINITIONS,
+      useFactory: (...reports) => reports,
+      inject: [SettlementReport],
     },
     FileExtractorService
   ]
